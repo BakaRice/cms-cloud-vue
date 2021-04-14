@@ -1,24 +1,16 @@
 # cms-vue
 
-## Project setup
-```
-npm install
-```
+基于vue和typescript的cms-cloud项目前端页面
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+> 🏃‍[后端](https://github.com/BakaRice/cms-cloud)
 
-### Compiles and minifies for production
+```json
+"dependencies": {
+    "core-js": "^3.6.5",
+    "element-plus": "^1.0.2-beta.40",
+    "less": "^4.1.1",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-0"
+  },
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
