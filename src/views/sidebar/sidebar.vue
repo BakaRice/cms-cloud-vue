@@ -1,17 +1,9 @@
 <template>
   <div class="sidebar-container">
     <div class="sidebar-logo-container">
-      <a
-        data-v-8286c07a=""
-        href="#/index"
-        class="sidebar-logo-link router-link-active"
-      >
-        <img
-          data-v-8286c07a=""
-          src="@/assets/cms-logo.png"
-          class="sidebar-logo"
-        />
-        <h1 data-v-8286c07a="" class="sidebar-title">门店系统</h1>
+      <a href="#/index" class="sidebar-logo-link router-link-active">
+        <img src="@/assets/cms-logo.png" class="sidebar-logo" />
+        <h1 class="sidebar-title">门店系统</h1>
       </a>
     </div>
     <div class="el-scrollbar">
@@ -33,7 +25,7 @@ export default {
 .sidebar-logo-container .sidebar-logo-link .sidebar-logo {
   width: 40px;
   vertical-align: middle;
-  margin-right: 12px;
+  /* margin-right: 12px; */
 }
 #app .sidebar-container a {
   display: inline-block;
@@ -41,10 +33,14 @@ export default {
   overflow: hidden;
 }
 
+.sidebar-logo-container.collapse .sidebar-logo {
+  margin-right: 0;
+}
+
 .sidebar-logo-container .sidebar-logo-link {
   height: 100%;
   width: 100%;
-  padding: 0 15px;
+  /* padding: 0 15px; */
 }
 a,
 a:focus,
@@ -59,6 +55,9 @@ a:hover {
   height: 50px;
   line-height: 50px;
   overflow: hidden;
+}
+#app .hideSidebar .sidebar-container {
+  width: 54px !important;
 }
 
 .sidebar-container {
