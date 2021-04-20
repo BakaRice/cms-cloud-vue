@@ -8,7 +8,7 @@
       >
         <img
           data-v-8286c07a=""
-          src="../assets/cms-logo.png"
+          src="@/assets/cms-logo.png"
           class="sidebar-logo"
         />
         <h1 data-v-8286c07a="" class="sidebar-title">门店系统</h1>
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import sidebarItem from "@/views/sidebar-item.vue";
+import sidebarItem from "@/views/sidebar/sidebar-item.vue";
 export default {
   components: {
     sidebarItem,
