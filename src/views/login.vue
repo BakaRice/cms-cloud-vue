@@ -40,7 +40,7 @@
                       >
                         <div class="el-input el-input--prefix el-input--suffix">
                           <input
-                            type="text"
+                            type="password"
                             autocomplete="off"
                             maxlength="16"
                             placeholder="请输入密码"
@@ -49,7 +49,7 @@
                           />
                           <span class="el-input__prefix">
                             <i
-                              class="el-icon-warning-outline"
+                              class="el-icon-lock"
                               style="font-size: 20px; color: rgb(102, 102, 102)"
                             ></i>
                           </span>
@@ -89,7 +89,7 @@ export default defineComponent({
     const user = ref({ id: null, password: "" });
     const store = useStore();
     const login = () => {
-      console.log(user)
+      console.log(user);
       store.dispatch(LOGIN, user.value);
     };
     return {

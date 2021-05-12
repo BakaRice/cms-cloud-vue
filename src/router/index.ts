@@ -4,28 +4,28 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: "login",
     path: "/login",
-    component: () => import("@/views/login.vue")
+    component: () => import("@/views/login.vue"),
   },
   {
-    name:"index",
+    name: "index",
     path: "/index",
-    component: () => import("@/views/index.vue")
+    component: () => import("@/views/index.vue"),
   },
   {
-    name:"three",
+    name: "three",
     path: "/three",
-    component: () => import("@/views/three/three.vue")
+    component: () => import("@/views/three/three.vue"),
   },
   {
     name: "nomatch",
     path: "/:pathMatch(.*)*",
-    redirect: { name: "login" }
-  }
+    redirect: { name: "login" },
+  },
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 });
 
 export default router;

@@ -53,7 +53,6 @@
         </div>
       </div>
       <section class="app-main">
-
         <router-view />
       </section>
     </div>
@@ -80,10 +79,10 @@ export default defineComponent({
     };
   },
   methods: {
-    handleOpen(key: any, keyPath: any) {
+    handleOpen(key: unknown, keyPath: unknown) {
       console.log(key, keyPath);
     },
-    handleClose(key: any, keyPath: any) {
+    handleClose(key: unknown, keyPath: unknown) {
       console.log(key, keyPath);
     },
   },
@@ -175,7 +174,6 @@ export default defineComponent({
 }
 
 .app-main {
-  width: 100%;
   position: relative;
   overflow: auto;
   padding: 24px !important;

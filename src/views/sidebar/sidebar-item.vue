@@ -13,7 +13,7 @@
         active-text-color="#1890ff"
       >
         <template v-for="(menu1, m1index) in menuList" :key="`m1-${m1index}`">
-          <el-submenu :index="menu1.index">
+          <el-submenu :index="menu1.index" style="text-align: start">
             <template #title>
               <i :class="menu1.i"></i>
               <span>{{ menu1.title }}</span>
@@ -31,6 +31,7 @@
         </template>
       </el-menu>
     </div>
+
     <!--    <el-menu-->
     <!--      default-active="1-4-1"-->
     <!--      class="el-menu-vertical-demo"-->
@@ -103,10 +104,10 @@ export default defineComponent({
     };
   },
   methods: {
-    handleOpen(key: any, keyPath: any) {
+    handleOpen(key: unknown, keyPath: unknown) {
       console.log(key, keyPath);
     },
-    handleClose(key: any, keyPath: any) {
+    handleClose(key: unknown, keyPath: unknown) {
       console.log(key, keyPath);
     },
   },
