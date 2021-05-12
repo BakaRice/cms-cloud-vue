@@ -7,7 +7,7 @@
           <div
             id="hamburger-container"
             class="hamburger-container"
-            style="padding: 0px 15px"
+            style="padding: 0 15px"
             @click="updateSideBarStatus"
           >
             <svg
@@ -53,8 +53,7 @@
         </div>
       </div>
       <section class="app-main">
-        <h1>app-main</h1>
-        <h1>for router-view</h1>
+
         <router-view />
       </section>
     </div>

@@ -21,6 +21,7 @@
                           maxlength="11"
                           placeholder="请输入手机号"
                           class="el-input__inner"
+                          v-model="user.id"
                         />
                         <span class="el-input__prefix">
                           <i
@@ -44,6 +45,7 @@
                             maxlength="16"
                             placeholder="请输入密码"
                             class="el-input__inner"
+                            v-model="user.password"
                           />
                           <span class="el-input__prefix">
                             <i
@@ -60,6 +62,7 @@
                       <button
                         type="button"
                         class="el-button el-button--primary"
+                        @click="login"
                       >
                         <span>登录</span>
                       </button>
@@ -74,6 +77,28 @@
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import { defineComponent, ref } from "vue";
+import { useStore } from "vuex";
+import { LOGIN } from "@/store/VuexTypes";
+import { User } from "@/datasource/Types";
+
+export default defineComponent({
+  setup() {
+    const user = ref({ id: null, password: "" });
+    const store = useStore();
+    const login = () => {
+      console.log(user)
+      store.dispatch(LOGIN, user.value);
+    };
+    return {
+      user,
+      login,
+    };
+  },
+});
+</script>
 
 <style lang="less" scoped>
 html {
@@ -91,11 +116,13 @@ html {
   );
   background-repeat: no-repeat;
   background-size: cover;
+
   .icon-po1,
   .icon-po2,
   .icon-po3 {
     position: absolute;
   }
+
   .icon-po1 {
     width: 162px;
     height: 107px;
@@ -103,6 +130,7 @@ html {
     left: 227px;
     background: url(../assets/images/login/icon-01.png) no-repeat 100% 100%;
   }
+
   .icon-po2 {
     width: 158px;
     height: 212px;
@@ -110,6 +138,7 @@ html {
     left: 0;
     background: url(../assets/images/login/icon-02.png) no-repeat 100% 100%;
   }
+
   .icon-po3 {
     width: 734px;
     height: 100%;
@@ -117,6 +146,7 @@ html {
     top: 0;
     background: url(../assets/images/login/icon-03.png) no-repeat 100% 100%;
   }
+
   .login-content {
     position: absolute;
     top: 50%;
@@ -126,53 +156,64 @@ html {
     align-items: center;
     width: 1300px;
     transform: translate(-50%, -50%);
+
     .login-banner {
       width: 780px;
       height: 614px;
       background: url(../assets/images/login/banner.png) center/cover no-repeat;
     }
+
     .login-box {
       width: 350px;
+
       .title {
         padding-bottom: 10px;
         color: #0046c2;
         font-size: 24px;
         text-align: center;
       }
+
       & /deep/ .el-tabs__nav {
         width: 100%;
       }
+
       & /deep/ .el-tabs__active-bar {
         width: 50%;
       }
+
       & /deep/ .el-tabs__item {
         width: 50%;
         text-align: center;
       }
+
       & /deep/ .el-input /deep/ .el-input__inner {
         border: none;
         border-bottom: 1px solid #e1e1e1;
         border-radius: 0;
         padding-left: 41px;
       }
+
       & /deep/ .icon-user,
       & /deep/ .icon-lock,
       & /deep/ .icon-safetycertificate {
         font-size: 28px;
         color: #666666;
       }
+
       & /deep/ .validateCode {
         width: 100px;
         height: 32px;
         vertical-align: middle;
         cursor: pointer;
       }
+
       & /deep/ .el-button--primary {
         width: 100%;
         margin-top: 5px;
         background-color: #0067b3;
         border-color: #0067b3;
       }
+
       & /deep/ .forgetPassword {
         display: flex;
         justify-content: center;
@@ -185,9 +226,11 @@ html {
       }
     }
   }
+
   @media screen and (max-width: 1366px) {
     .login-content {
       width: 1000px;
+
       .login-banner {
         width: 600px;
         height: 500px;

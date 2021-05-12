@@ -1,14 +1,7 @@
 <template>
-  <div style="display: flex">
-    <div style="width: 50%">
-      <h1>hi</h1>
-      <canvas id="three"></canvas>
-    </div>
-    <div style="width: 50%">
-      <h1>hi</h1>
-      <canvas id="three"></canvas>
-    </div>
-  </div>
+<div>
+    <canvas id="three"></canvas>
+</div>
 </template>
 
 <script>

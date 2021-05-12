@@ -1,10 +1,21 @@
 <template>
   <router-view />
+  <alertdialog v-if="exception !== undefined && exception.length > 0" />
 </template>
 
 <script lang="ts">
-import Vue, { defineComponent } from "vue";
-export default defineComponent({});
+import { defineAsyncComponent, defineComponent } from "vue";
+import sidebar from "@/views/Sidebar.vue";
+import { mapState } from "vuex";
+const alertdialog = defineAsyncComponent(
+  () => import("@/components/AlertDialog.vue")
+);
+export default defineComponent({
+  components: { alertdialog },
+  computed: {
+    ...mapState(["exception"]),
+  },
+});
 </script>
 <style>
 html {

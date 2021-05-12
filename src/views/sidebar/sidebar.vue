@@ -3,7 +3,7 @@
     <div class="sidebar-logo-container">
       <a href="#/index" class="sidebar-logo-link router-link-active">
         <img src="@/assets/cms-logo.png" class="sidebar-logo" />
-        <h1 class="sidebar-title">门店系统</h1>
+        <h1 class="sidebar-title">制造管理系统</h1>
       </a>
     </div>
     <div class="el-scrollbar">

@@ -8,11 +8,14 @@ export interface User {
   id?: number;
   level?: number;
   name?: string;
+  phone?: string;
+  password?: string;
   address?: string;
   insertTime?: string;
   sex?: string;
   title?: Title;
   courses?: Course[];
+
 }
 
 export interface Title {
@@ -39,4 +42,16 @@ export interface GithubRepos {
   size?: number;
   forks?: number;
   stargazers_count?: number;
+}
+
+export interface Chen{
+  id?: number;
+  hash?: string;
+  send?: string;
+  rece?: string;
+  name?: string;
+  createTime?: string;
+  updateTime?: string;
+  createBy?: string|null;
+  updateBy?: string|null;
 }
