@@ -1,6 +1,16 @@
 module.exports = {
   // 开发环境配置
   devServer: {
+    // //icon
+    // pwa: {
+    //   iconPaths: {
+    //     favicon32: "ic.ico",
+    //     favicon16: "ic.ico",
+    //     appleTouchIcon: "ic.ico",
+    //     maskIcon: "ic.ico",
+    //     msTileImage: "ic.ico",
+    //   },
+    // },
     // 默认端口
     port: 8081,
     // 设置代理
