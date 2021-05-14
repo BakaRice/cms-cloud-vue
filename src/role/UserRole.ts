@@ -82,6 +82,43 @@ const routes: Array<RouteRecordRaw> = [
         path: "/planDevice",
         component: () => import("@/views/device/planDevice.vue"),
       },
+      //quality 质量管理相关
+      {
+        //"质量级别",
+        name: "level",
+        path: "/level",
+        component: () => import("@/views/quality/level.vue"),
+      },
+      {
+        // "质量检测",
+        name: "detect",
+        path: "/detect",
+        component: () => import("@/views/quality/detect.vue"),
+      },
+      {
+        //"质量分析",
+        name: "analysis",
+        path: "/analysis",
+        component: () => import("@/views/quality/analysis.vue"),
+      },
+      //make 生产过程相关
+      {
+        name: "workflow",
+        path: "/workflow",
+        component: () => import("@/views/make/workflow.vue"),
+      },
+      {
+        // 加工数据分析
+        name: "makeAnalysis",
+        path: "/makeAnalysis",
+        component: () => import("@/views/make/makeAnalysis.vue"),
+      },
+      {
+        // 加工数据管理
+        name: "data",
+        path: "/data",
+        component: () => import("@/views/make/data.vue"),
+      },
     ],
   },
   {
@@ -193,30 +230,40 @@ const menuList: Menu[] = [
     children: [
       {
         index: "5-1",
-        title: "质量级别管理",
-        path: "/userInfo",
+        title: "质量级别",
+        path: "/level",
       },
       {
         index: "5-2",
-        title: "质量检测管理",
-        path: "/sc",
+        title: "质量检测",
+        path: "/detect",
+      },
+      {
+        index: "5-3",
+        title: "质量分析",
+        path: "/analysis",
       },
     ],
   },
   {
     index: "6",
-    i: "el-icon-location",
+    i: "el-icon-odometer",
     title: "生产加工管理模块",
     children: [
       {
         index: "6-1",
         title: "生产作业流程管理",
-        path: "/userInfo",
+        path: "/workflow",
       },
       {
         index: "6-2",
-        title: "零件加工数据管理",
-        path: "/sc",
+        title: "加工数据管理",
+        path: "/data",
+      },
+      {
+        index: "6-3",
+        title: "加工数据分析",
+        path: "/makeAnalysis",
       },
     ],
   },

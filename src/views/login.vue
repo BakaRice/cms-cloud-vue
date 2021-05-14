@@ -12,7 +12,7 @@
               <h1 class="title">零部件制造管理系统</h1>
               <div class="msgLogin">
                 <form class="el-form">
-                  <div class="el-form-item is-error is-required">
+                  <div class="el-form-item is-required">
                     <div class="el-form-item__content">
                       <div class="el-input el-input--prefix el-input--suffix">
                         <input
@@ -86,7 +86,7 @@ import { User } from "@/datasource/Types";
 
 export default defineComponent({
   setup() {
-    const user = ref({ id: null, password: "" });
+    const user = ref({ id: "", password: "" });
     const store = useStore();
     const login = () => {
       console.log(user);
