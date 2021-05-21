@@ -35,19 +35,38 @@
                 role="button"
                 tabindex="0"
               >
-                <p class="user-name">谭文韬</p>
-                <i class="el-icon-arrow-down el-icon--right"></i>
+                <el-dropdown>
+                  <span class="el-dropdown-link">
+                    <p class="user-name">{{ roleName }}:{{ user.name }}</p>
+                    <i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item @click="logout">登出</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
               </div>
-              <ul
+              <!-- <ul
                 class="el-dropdown-menu el-popper"
                 id="dropdown-menu-8685"
                 style="display: none"
               >
                 <li tabindex="-1" class="el-dropdown-menu__item">
-                  <!---->
-                  <span style="display: block">登出</span>
+                  <el-dropdown>
+                    <span style="display: block">登出</span>
+                    <template #dropdown>
+                      <el-dropdown-menu>
+                        <el-dropdown-item>黄金糕</el-dropdown-item>
+                        <el-dropdown-item>狮子头</el-dropdown-item>
+                        <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                        <el-dropdown-item disabled>双皮奶</el-dropdown-item>
+                        <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
                 </li>
-              </ul>
+              </ul> -->
             </div>
           </div>
         </div>
@@ -64,16 +83,27 @@ import Sidebar from "@/views/sidebar/sidebar.vue";
 import { State } from "@/store";
 import { UPDATE_SIDEBAR_STATUS } from "@/store/VuexTypes";
 import { computed, defineComponent } from "vue";
-import { Store, useStore } from "vuex";
+import { mapState, Store, useStore } from "vuex";
+import router from "@/router";
 
 export default defineComponent({
+  computed: {
+    ...mapState(["user"]),
+    ...mapState(["roleName"]),
+  },
   setup() {
     const store: Store<State> = useStore();
     const sidebarStatus = computed(() => store.state.sideBarStatus);
     const updateSideBarStatus = () => {
       store.commit(UPDATE_SIDEBAR_STATUS, !sidebarStatus.value);
     };
+    const logout = () => {
+      console.log("lougout!");
+      sessionStorage.clear();
+      router.push("/login");
+    };
     return {
+      logout,
       sidebarStatus,
       updateSideBarStatus,
     };
@@ -93,6 +123,14 @@ export default defineComponent({
 </script>
 
 <style>
+/* app-main {
+  width: 100%;
+  position: relative;
+  overflow: auto;
+  padding: 24px !important;
+  background: #f5f5f5;
+  box-shadow: inset 0 0 6px 2px rgb(0 0 0 / 15%);
+} */
 .app-wrapper {
   position: relative;
   height: 100%;

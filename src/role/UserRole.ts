@@ -22,11 +22,29 @@ const routes: Array<RouteRecordRaw> = [
         path: "/linK",
         component: () => import("@/views/three/link.vue"),
       },
+      //INDEX WELCOME
+      {
+        name: "welcome",
+        path: "/index/welcome",
+        component: () => import("@/views/welcome.vue"),
+      },
       //user相关 员工信息，考勤与排班
       {
         name: "userInfo",
         path: "/userInfo",
         component: () => import("@/views/user/userInfo.vue"),
+      },
+      {
+        name: "userInfoDetail",
+        path: "/userInfo/:uid",
+        props: true,
+        component: () => import("@/views/user/userInfoDetail.vue"),
+      },
+      {
+        name: "userInfoEdit",
+        path: "/userEdit/:uid",
+        props: true,
+        component: () => import("@/views/user/userInfoEdit.vue"),
       },
       {
         name: "roster",

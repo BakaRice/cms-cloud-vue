@@ -5,15 +5,18 @@ import { Menu } from "@/role/Menu";
 import router from "@/router";
 import { ResultVO } from "@/mock";
 import axios from "@/axios/index";
+import { LOGIN_URI } from "@/store/uri";
 
 export interface State {
   user: User;
   courses: Course[];
   exception: string;
+  loading: string;
   userCourses: Course[];
   sideBarStatus: boolean;
   //权限相关
   role?: number | null;
+  roleName?: string | null;
   menuList?: Menu[];
 }
 
@@ -28,7 +31,10 @@ const myState: State = {
   courses: [],
   userCourses: [],
   exception: "",
+  loading: "",
   sideBarStatus: true,
+  role: null,
+  roleName: null,
 };
 const myMutations: MutationTree<State> = {
   //设置sidebar状态
@@ -38,32 +44,52 @@ const myMutations: MutationTree<State> = {
   [vxt.SET_ROLE](state: State, data: number) {
     state.role = data;
   },
+  [vxt.SET_ROLE_NAME](state: State, data: string) {
+    state.roleName = data;
+  },
   [vxt.SET_MENULIST](state: State, data: Menu[]) {
     state.menuList = data;
   },
   [vxt.UPDATE_USER]: (state, data: User) => (state.user = data),
+  [vxt.UPDATE_USER_NAME]: (state, data: string) => (state.user.name = data),
   //异常处理
   [vxt.UPDATE_EXCEPTION]: (state, data: string) => (state.exception = data),
+  [vxt.UPDATE_LOADING]: (state, data: string) => (state.loading = data),
 };
 const myActions: ActionTree<State, State> = {
   //登录
+
   async [vxt.LOGIN]({ commit }, user: User) {
     try {
       console.log("axios登录操作");
-      const resp = await axios.post<ResultVO>("user/login", user);
-      // const resp = await axios.post("user/login", user);
+      const resp = await axios.post<ResultVO>(LOGIN_URI, user);
+      // const resp = await axios.post("/chen/user/login", user);
       console.log(resp);
-      console.log(resp.data);
+      console.log("登陆resp data", resp.data.data);
       console.log(resp.headers.token);
       sessionStorage.setItem("token", resp.headers.token);
       // commit(vxt.UPDATE_USER, resp.data.data.user);
-      if (resp.headers.token != null || resp.data.data == true) {
-        commit(vxt.SET_ROLE, 3);
-        sessionStorage.setItem("role", "3");
+      if (resp.headers.token != null) {
+        //用户权限
+        const roleName: string = resp.data.data.role;
+        const roleId: string = resp.data.data.roleId;
+        commit(vxt.SET_ROLE, roleId);
+        commit(vxt.SET_ROLE_NAME, roleName);
+
+        //用户名
+        const userName: string = resp.data.data.userName;
+        commit(vxt.UPDATE_USER_NAME, userName);
+        console.log(roleName, roleId, userName);
+
+        //存储 session
+        sessionStorage.setItem("role", roleId);
+        sessionStorage.setItem("roleName", roleName);
+        sessionStorage.setItem("name", userName);
+
         const { setUserRole } = await import("@/role/UserRole.ts");
         const menuList = setUserRole();
         commit(vxt.SET_MENULIST, menuList);
-        router.push("/index");
+        router.push("/index/welcome");
       }
     } catch (e) {
       // eslint默认禁止空执行体。加一段注释或关闭该检测

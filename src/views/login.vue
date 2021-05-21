@@ -21,7 +21,7 @@
                           maxlength="11"
                           placeholder="请输入手机号"
                           class="el-input__inner"
-                          v-model="user.id"
+                          v-model="user.phone"
                         />
                         <span class="el-input__prefix">
                           <i
@@ -81,16 +81,20 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
-import { LOGIN } from "@/store/VuexTypes";
-import { User } from "@/datasource/Types";
+import { LOGIN, UPDATE_EXCEPTION, UPDATE_LOADING } from "@/store/VuexTypes";
 
 export default defineComponent({
   setup() {
-    const user = ref({ id: "", password: "" });
+    const user = ref({ phone: "", password: "" });
     const store = useStore();
     const login = () => {
       console.log(user);
-      store.dispatch(LOGIN, user.value);
+      if (user.value.phone == "" || user.value.password == "") {
+        store.commit(UPDATE_EXCEPTION, "用户名或密码不能为空");
+      } else {
+        store.commit(UPDATE_LOADING, "加载中");
+        store.dispatch(LOGIN, user.value);
+      }
     };
     return {
       user,

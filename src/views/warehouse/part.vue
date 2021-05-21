@@ -1,4 +1,44 @@
 <template>
+  <div class="part-container">
+    <div class="part-container-left">left</div>
+    <div class="part-container-right">
+      <div class="part-container-right-up">
+        <div ref="myChart" :style="{ width: '500px', height: '500px' }"></div>
+      </div>
+      <div class="part-container-right-down">
+        <h2>操作列表</h2>
+
+        <div class="link">
+          <img
+            class="link-img"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAt1BMVEUAAAD///8kkv8gf/8cjv8MhvMUevUSe/YRf/YPf/cNfPINgPIMgPMLffQPevUOe/EMe/MMffMMfPMLfvQPfPQOfPQNfPINe/INfPIMfPMMe/MMffMLffEMfPMMe/ELfPIMevMMfPELfPIMevIMe/ILe/ILe/IMevEMevIMe/IMevIMevELe/ELe/ELe/IMevIMe/IMe/IMevIMe/EMevEMe/ELe/ELevILevILevILevILe/ILevG/7fm1AAAAPHRSTlMAAQcICRUZHR4iJygsLTI4Pj9ARUZITE1QVFVWXG1uc3+AiJiZnZ+8wNLV297g5Ojp6+zv8PP19vj6/P3JXrxxAAABFklEQVQ4y83U21LCMBCA4W2pKB5AUarWQ420pUqhFkVR//d/Li+kMxRCknG4cK+SnS+zTTq7IuvRflDr0RdNHIzZCKVxnQlO8GgKi8dG3VwHT17g/byZUxrYncH8VKyw9wavPbHCsznMumKFFx9QHosVXi5geihWeP0Jk45Y4e0XjPfFCq++4bm93ARhHIeBHip42luuowqgirbBejOsf/DQDCOgSJICiEwwqCDzRVoZVIEBhlD4IiKtAkIDjCH5TSUQu8I719IDh8v4GZS+4/OMPLcHh9QzQbmpAMoRkIqI9Ff7unEqCOP7ge+luu7TdZqXqs200k+Dfw7rsZMrpZQywOY42wV0Lr39Mvnq8NwJ1H38n+APHWVuBQbe4FwAAAAASUVORK5CYII="
+          />
+          <span>新建入库单</span>
+        </div>
+        <div class="link">
+          <img
+            class="link-img"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAt1BMVEUAAAD///8kkv8gf/8cjv8MhvMUevUSe/YRf/YPf/cNfPINgPIMgPMLffQPevUOe/EMe/MMffMMfPMLfvQPfPQOfPQNfPINe/INfPIMfPMMe/MMffMLffEMfPMMe/ELfPIMevMMfPELfPIMevIMe/ILe/ILe/IMevEMevIMe/IMevIMevELe/ELe/ELe/IMevIMe/IMe/IMevIMe/EMevEMe/ELe/ELevILevILevILevILe/ILevG/7fm1AAAAPHRSTlMAAQcICRUZHR4iJygsLTI4Pj9ARUZITE1QVFVWXG1uc3+AiJiZnZ+8wNLV297g5Ojp6+zv8PP19vj6/P3JXrxxAAABFklEQVQ4y83U21LCMBCA4W2pKB5AUarWQ420pUqhFkVR//d/Li+kMxRCknG4cK+SnS+zTTq7IuvRflDr0RdNHIzZCKVxnQlO8GgKi8dG3VwHT17g/byZUxrYncH8VKyw9wavPbHCsznMumKFFx9QHosVXi5geihWeP0Jk45Y4e0XjPfFCq++4bm93ARhHIeBHip42luuowqgirbBejOsf/DQDCOgSJICiEwwqCDzRVoZVIEBhlD4IiKtAkIDjCH5TSUQu8I719IDh8v4GZS+4/OMPLcHh9QzQbmpAMoRkIqI9Ff7unEqCOP7ge+luu7TdZqXqs200k+Dfw7rsZMrpZQywOY42wV0Lr39Mvnq8NwJ1H38n+APHWVuBQbe4FwAAAAASUVORK5CYII="
+          />
+          <span>新建出库单</span>
+        </div>
+        <div class="link">
+          <img
+            class="link-img"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAt1BMVEUAAAD///8kkv8gf/8cjv8MhvMUevUSe/YRf/YPf/cNfPINgPIMgPMLffQPevUOe/EMe/MMffMMfPMLfvQPfPQOfPQNfPINe/INfPIMfPMMe/MMffMLffEMfPMMe/ELfPIMevMMfPELfPIMevIMe/ILe/ILe/IMevEMevIMe/IMevIMevELe/ELe/ELe/IMevIMe/IMe/IMevIMe/EMevEMe/ELe/ELevILevILevILevILe/ILevG/7fm1AAAAPHRSTlMAAQcICRUZHR4iJygsLTI4Pj9ARUZITE1QVFVWXG1uc3+AiJiZnZ+8wNLV297g5Ojp6+zv8PP19vj6/P3JXrxxAAABFklEQVQ4y83U21LCMBCA4W2pKB5AUarWQ420pUqhFkVR//d/Li+kMxRCknG4cK+SnS+zTTq7IuvRflDr0RdNHIzZCKVxnQlO8GgKi8dG3VwHT17g/byZUxrYncH8VKyw9wavPbHCsznMumKFFx9QHosVXi5geihWeP0Jk45Y4e0XjPfFCq++4bm93ARhHIeBHip42luuowqgirbBejOsf/DQDCOgSJICiEwwqCDzRVoZVIEBhlD4IiKtAkIDjCH5TSUQu8I719IDh8v4GZS+4/OMPLcHh9QzQbmpAMoRkIqI9Ff7unEqCOP7ge+luu7TdZqXqs200k+Dfw7rsZMrpZQywOY42wV0Lr39Mvnq8NwJ1H38n+APHWVuBQbe4FwAAAAASUVORK5CYII="
+          />
+          <span>查看入库单列表</span>
+        </div>
+        <div class="link">
+          <img
+            class="link-img"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAt1BMVEUAAAD///8kkv8gf/8cjv8MhvMUevUSe/YRf/YPf/cNfPINgPIMgPMLffQPevUOe/EMe/MMffMMfPMLfvQPfPQOfPQNfPINe/INfPIMfPMMe/MMffMLffEMfPMMe/ELfPIMevMMfPELfPIMevIMe/ILe/ILe/IMevEMevIMe/IMevIMevELe/ELe/ELe/IMevIMe/IMe/IMevIMe/EMevEMe/ELe/ELevILevILevILevILe/ILevG/7fm1AAAAPHRSTlMAAQcICRUZHR4iJygsLTI4Pj9ARUZITE1QVFVWXG1uc3+AiJiZnZ+8wNLV297g5Ojp6+zv8PP19vj6/P3JXrxxAAABFklEQVQ4y83U21LCMBCA4W2pKB5AUarWQ420pUqhFkVR//d/Li+kMxRCknG4cK+SnS+zTTq7IuvRflDr0RdNHIzZCKVxnQlO8GgKi8dG3VwHT17g/byZUxrYncH8VKyw9wavPbHCsznMumKFFx9QHosVXi5geihWeP0Jk45Y4e0XjPfFCq++4bm93ARhHIeBHip42luuowqgirbBejOsf/DQDCOgSJICiEwwqCDzRVoZVIEBhlD4IiKtAkIDjCH5TSUQu8I719IDh8v4GZS+4/OMPLcHh9QzQbmpAMoRkIqI9Ff7unEqCOP7ge+luu7TdZqXqs200k+Dfw7rsZMrpZQywOY42wV0Lr39Mvnq8NwJ1H38n+APHWVuBQbe4FwAAAAASUVORK5CYII="
+          />
+          <span>查看出库单列表</span>
+        </div>
+      </div>
+    </div>
+  </div>
   <div style="text-align: start">
     <h1>零件存储管理</h1>
     <div>
@@ -116,8 +156,228 @@
   </div>
 </template>
 
-<script>
-export default {};
+<script lang="ts">
+import { ref, shallowRef } from "vue";
+import * as echarts from "echarts";
+import axios from "@/axios/index";
+// import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+export default {
+  name: "warehouse-part",
+  setup() {
+    /************************************
+     * 列表数据格式定义
+     */
+
+    //定义种类列表
+    let TypeTabelData = ref([
+      {
+        // id: "",
+        name: "零件名称0001",
+        // code: "PS20210521A0001",
+        supplierName: "供应商名称1",
+        supplierId: "1",
+        cargoTypeId: "0",
+        cargoTypeName: "零件",
+      },
+    ]);
+
+    let CargoTableData = ref([
+      {
+        id: 0,
+        name: "",
+        code: "",
+        typeCode: "",
+        typeName: "",
+        workId: "",
+        workerName: "",
+        supplierId: "",
+        supplierName: "",
+        status: 0,
+        in_time: "",
+        out_time: "",
+        create_by: "",
+        update_by: "",
+        create_time: "",
+        update_tieme: "",
+        inbound_id: "",
+        outbound_id: "",
+      },
+    ]);
+    /************************************
+     * 表格绘制
+     */
+    const myChart = ref<HTMLElement>(); //也可以用const myChart = ref<any>();
+    let mychartData = [{}];
+    let mychartOption = {
+      title: {
+        text: "仓储管理概况旭日图",
+        subtext: "提供类型、供应商、下属种类三级概况",
+        textStyle: {
+          fontSize: 14,
+          align: "center",
+        },
+        subtextStyle: {
+          align: "center",
+        },
+      },
+      series: {
+        type: "sunburst",
+
+        data: mychartData,
+        radius: [0, "95%"],
+        sort: null,
+
+        emphasis: {
+          focus: "ancestor",
+        },
+
+        levels: [
+          {},
+          {
+            r0: "15%",
+            r: "35%",
+            itemStyle: {
+              borderWidth: 2,
+            },
+            label: {
+              rotate: "tangential",
+            },
+          },
+          {
+            r0: "35%",
+            r: "70%",
+            label: {
+              align: "right",
+            },
+          },
+          {
+            r0: "70%",
+            r: "72%",
+            label: {
+              position: "outside",
+              padding: 3,
+              silent: false,
+            },
+            itemStyle: {
+              borderWidth: 3,
+            },
+          },
+        ],
+      },
+    };
+
+    const myCharts = shallowRef<any>({
+      chart1: {},
+    });
+
+    setTimeout(() => {
+      myCharts.value.chart1 = echarts.init(myChart.value!, { renderer: "svg" });
+      myCharts.value.chart1.showLoading();
+      myCharts.value.chart1.setOption(mychartOption);
+      myCharts.value.chart1.on(
+        "click",
+        function (params: { name: string | number | boolean }) {
+          console.log("click", params);
+        }
+      );
+    }, 10);
+
+    axios.get("/pms/warehouse/Sunburst").then(
+      (resp) => {
+        console.log(resp);
+        mychartData = resp.data.data;
+        console.log(mychartData);
+        myCharts.value.chart1.hideLoading();
+        myCharts.value.chart1.setOption({
+          series: {
+            type: "sunburst",
+
+            data: resp.data.data,
+            radius: [0, "95%"],
+            sort: null,
+
+            emphasis: {
+              focus: "ancestor",
+            },
+
+            levels: [
+              {},
+              {
+                r0: "15%",
+                r: "35%",
+                itemStyle: {
+                  borderWidth: 2,
+                },
+                label: {
+                  rotate: "tangential",
+                },
+              },
+              {
+                r0: "35%",
+                r: "70%",
+                label: {
+                  align: "right",
+                },
+              },
+              {
+                r0: "70%",
+                r: "72%",
+                label: {
+                  position: "outside",
+                  padding: 3,
+                  silent: false,
+                },
+                itemStyle: {
+                  borderWidth: 3,
+                },
+              },
+            ],
+          },
+        });
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+    return { myChart };
+  },
+};
 </script>
 
-<style></style>
+<style>
+.part-container {
+  display: flex;
+}
+.part-container-left {
+  width: 60%;
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+.part-container-right {
+  width: 40%;
+  margin-left: 10px;
+}
+.part-container-right-up {
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.part-container-right-down {
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.link {
+  text-align: start;
+  padding: 10px;
+  font-size: inherit;
+}
+.link-img {
+  width: 20px;
+  height: 20px;
+  margin: 0 12px 0 24px;
+}
+</style>
