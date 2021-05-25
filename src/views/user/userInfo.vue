@@ -1,4 +1,5 @@
 <template>
+  <userAdd />
   <div class="bigCard">
     <div style="text-align: start">
       <h2>员工信息管理</h2>
@@ -13,7 +14,7 @@
         <el-form-item>
           <el-button type="primary" @click="onFind">查询</el-button>
           <el-button @click="onReset">重置</el-button>
-          <el-button type="success" @click="onFind">新增</el-button>
+          <el-button type="success" @click="onAdd">新增</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -128,14 +129,16 @@ export default defineComponent({
         axiosGetonFind();
       }
     };
+    const onAdd = () => {
+      router.push({
+        path: "/userAdd/",
+      });
+    };
     const onReset = () => {
       findContent.value.get = "";
       axios
         .get(
-          "/pms/leader/infos?pageNum=" +
-            req.pageNum +
-            "&pageSize=" +
-            req.pageSize
+          `/pms/leader/infos?pageNum=${req.pageNum}&pageSize=${req.pageSize}`
         )
         .then((resp) => {
           total.value = resp.data.data.total;
@@ -145,7 +148,6 @@ export default defineComponent({
           console.log(tableData.value);
         });
     };
-
     const axiosGetonFind = () => {
       axios
         .get(
@@ -168,9 +170,7 @@ export default defineComponent({
 
     //获得初始化数据
     axios
-      .get(
-        "/pms/leader/infos?pageNum=" + req.pageNum + "&pageSize=" + req.pageSize
-      )
+      .get(`/pms/leader/infos?pageNum=${req.pageNum}&pageSize=${req.pageSize}`)
       .then((resp) => {
         total.value = resp.data.data.total;
         currPage.value = resp.data.data.pageNum;
@@ -178,7 +178,6 @@ export default defineComponent({
         tableData.value = resp.data.data.list;
         console.log(tableData.value);
       });
-
     //获取页面内容
     const getPageInfo = (cp: number) => {
       console.log("通用分页模板:改变页数:", cp, req, currPage.value);
@@ -191,10 +190,7 @@ export default defineComponent({
       //进行内容查询
       axios
         .get(
-          "/pms/leader/infos?pageNum=" +
-            req.pageNum +
-            "&pageSize=" +
-            req.pageSize
+          `/pms/leader/infos?pageNum=${req.pageNum}&pageSize=${req.pageSize}`
         )
         .then((resp) => {
           total.value = resp.data.data.total;
@@ -205,7 +201,6 @@ export default defineComponent({
     };
 
     const getDetailRow = (index: number, rows: Array<any>) => {
-      // rows.splice(index, 1);
       console.log(index, rows);
       const uid = rows[index].idString;
       router.push({
@@ -214,7 +209,6 @@ export default defineComponent({
     };
 
     const editDetailRow = (index: number, rows: Array<any>) => {
-      // rows.splice(index, 1);
       console.log(index, rows);
       const uid = rows[index].idString;
       router.push({
@@ -226,6 +220,7 @@ export default defineComponent({
       findContent,
       onFind,
       onReset,
+      onAdd,
       total,
       totalPage,
       currPage,

@@ -1,6 +1,83 @@
 <template>
   <div class="part-container">
-    <div class="part-container-left">left</div>
+    <div class="part-container-left">
+      <div style="text-align: start">
+        <h2>零件信息管理</h2>
+        <el-form :inline="true" :model="findContent" class="demo-form-inline">
+          <el-form-item label="查询内容">
+            <el-input
+              v-model="findContent.get"
+              placeholder="类型|供应商|编号"
+              :width="200"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onFind">查询</el-button>
+            <el-button @click="onReset">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <div>
+        <el-table
+          :data="this.tableData"
+          border
+          style="width: 100%"
+          :highlight-current-row="true"
+          :size="mini"
+        >
+          <!-- 通用数据列表 -->
+          <el-table-column
+            v-for="(item, index) in typeTableLabel"
+            :key="index"
+            :prop="item.prop"
+            :width="item.width"
+            :label="item.label"
+          ></el-table-column>
+          <!-- 通用操作列表 -->
+          <el-table-column
+            v-for="(itemOp, indexOp) in tableOperationLabel"
+            :key="indexOp"
+            :index="indexOp"
+            :prop="itemOp.prop"
+            :width="itemOp.width"
+            :label="itemOp.label"
+          >
+            <!-- <el-button type="info" @click="getUserdetail(itemOp)">详情</el-button> -->
+            <template #default="scope">
+              <el-button
+                @click.enter.prevent="getDetailRow(scope.$index, tableData)"
+                type="text"
+                size="small"
+              >
+                详情
+              </el-button>
+              <!-- <el-button
+                @click.enter.prevent="editDetailRow(scope.$index, tableData)"
+                type="text"
+                size="small"
+              >
+                编辑
+              </el-button> -->
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- pageNum:{{ pageNum }},totalPage:{{ totalPage }},currPage:{{ currPage }} -->
+
+        <div class="el-row is-justify-end el-row--flex">
+          <el-pagination
+            background
+            layout="total,prev, pager, next"
+            :page-count="totalPage"
+            :page-size="10"
+            :current-page="currPage"
+            :currentPage="currPage"
+            @current-change="getPageInfo"
+            :total="total"
+          ></el-pagination>
+        </div>
+      </div>
+    </div>
     <div class="part-container-right">
       <div class="part-container-right-up">
         <div ref="myChart" :style="{ width: '500px', height: '500px' }"></div>
@@ -160,10 +237,103 @@
 import { ref, shallowRef } from "vue";
 import * as echarts from "echarts";
 import axios from "@/axios/index";
+import { UPDATE_EXCEPTION } from "@/store/VuexTypes";
+import store from "@/store";
+import router from "@/router";
 // import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 export default {
   name: "warehouse-part",
   setup() {
+    //提前定义数据内容 列表格式
+    //定义种类列表
+    const typeTableLabel = [
+      { label: "id", width: "40", prop: "id" },
+      { label: "零件名称", width: "", prop: "name" },
+      { label: "供应商名称", width: "", prop: "supplierName" },
+      { label: "供应商编号", width: "", prop: "supplierId" },
+      { label: "零件类型编号", width: "200", prop: "cargoTypeId" },
+      { label: "零件类型名称", width: "", prop: "cargoTypeName" },
+    ];
+    //提前定义操作内容 列表格式
+    const tableOperationLabel = [{ label: "操作", width: "", prop: "detail" }];
+    //读取页面数据 总数，总页数，当前页
+    const tableData = ref([
+      {
+        id: 1,
+        name: "Z482曲轴前油封",
+        // code: "PS20210521A0001",
+        supplierName: "丹江铸力",
+        supplierId: "1",
+        cargoTypeId: "GS456807468GA",
+        cargoTypeName: "零件",
+      },
+      {
+        id: 2,
+        name: "V2403活塞",
+        // code: "PS20210521A0001",
+        supplierName: "丹江铸力",
+        supplierId: "1",
+        cargoTypeId: "AS206807468GA",
+        cargoTypeName: "零件",
+      },
+      {
+        id: 3,
+        name: "洋马3TNM74缸盖总成",
+        // code: "PS20210521A0001",
+        supplierName: "丹江铸力",
+        supplierId: "1",
+        cargoTypeId: "AS2068078786AA",
+        cargoTypeName: "零件",
+      },
+      {
+        id: 4,
+        name: "曲轴密封-68078786AA",
+        // code: "PS20210521A0001",
+        supplierName: "丹江铸力",
+        supplierId: "1",
+        cargoTypeId: "PS20243251A3571",
+        cargoTypeName: "零件",
+      },
+      {
+        id: 5,
+        name: "6D125E-2A-40四配套 大小瓦止推片",
+        // code: "PS20210521A0001",
+        supplierName: "丹江铸力",
+        supplierId: "1",
+        cargoTypeId: "PS20243251A0001",
+        cargoTypeName: "零件",
+      },
+      {
+        id: 6,
+        name: "曲轴密封-68078786AA",
+        // code: "PS20210521A0001",
+        supplierName: "丹江铸力",
+        supplierId: "1",
+        cargoTypeId: "PS2043221A0001",
+        cargoTypeName: "零件",
+      },
+      {
+        id: 7,
+        name: "6D125E-2A-40四配套 大小瓦止推片",
+        // code: "PS20210521A0001",
+        supplierName: "丹江铸力",
+        supplierId: "1",
+        cargoTypeId: "PS20210521A0001",
+        cargoTypeName: "零件",
+      },
+    ]);
+    const total = ref<number>(0); //总数
+    let totalPage = ref<number>(0); //总页数
+    const currPage = ref<number>(1); //当前页
+
+    //请求内容 默认分页从第一页开始 每页10项内容
+    let req = { pageNum: 1, pageSize: 10 };
+
+    //查询内容
+    let findContent = ref({
+      get: "",
+    });
+
     /************************************
      * 列表数据格式定义
      */
@@ -282,6 +452,79 @@ export default {
       );
     }, 10);
 
+    const onFind = () => {
+      console.log("userinfo查询接口", findContent.value);
+      if (findContent.value.get === null || findContent.value.get === "") {
+        store.commit(UPDATE_EXCEPTION, "查询内容不能为空！");
+      } else {
+        // axiosGetonFind();
+        console.log("PART 查询功能未实现！");
+      }
+    };
+
+    const onReset = () => {
+      findContent.value.get = "";
+      console.log("PART 查询功能重置！");
+      // axios
+      //   .get(
+      //     "/pms/leader/infos?pageNum=" +
+      //       req.pageNum +
+      //       "&pageSize=" +
+      //       req.pageSize
+      //   )
+      //   .then((resp) => {
+      //     total.value = resp.data.data.total;
+      //     currPage.value = resp.data.data.pageNum;
+      //     totalPage.value = resp.data.data.pages;
+      //     tableData.value = resp.data.data.list;
+      //     console.log(tableData.value);
+      //   });
+    };
+
+    //获取页面内容
+    const getPageInfo = (cp: number) => {
+      console.log("通用分页模板:改变页数:", cp, req, currPage.value);
+      // if (cp == undefined) {
+      //   cp = 1;
+      // }
+      req.pageNum = cp;
+      currPage.value = cp;
+      console.log("获取分页内容未实现!");
+
+      // //进行内容查询
+      // axios
+      //   .get(
+      //     "/pms/leader/infos?pageNum=" +
+      //       req.pageNum +
+      //       "&pageSize=" +
+      //       req.pageSize
+      //   )
+      //   .then((resp) => {
+      //     total.value = resp.data.data.total;
+      //     currPage.value = resp.data.data.pageNum;
+      //     totalPage.value = resp.data.data.pages;
+      //     tableData.value = resp.data.data.list;
+      //   });
+    };
+
+    const getDetailRow = (index: number, rows: Array<any>) => {
+      // rows.splice(index, 1);
+      console.log(index, rows);
+      // const uid = rows[index].idString;
+      // router.push({
+      //   path: "/userInfo/" + uid,
+      // });
+    };
+
+    const editDetailRow = (index: number, rows: Array<any>) => {
+      // rows.splice(index, 1);
+      console.log(index, rows);
+      // const uid = rows[index].idString;
+      // router.push({
+      //   path: "/userEdit/" + uid,
+      // });
+    };
+
     axios.get("/pms/warehouse/Sunburst").then(
       (resp) => {
         console.log(resp);
@@ -339,7 +582,21 @@ export default {
         console.log(error);
       }
     );
-    return { myChart };
+    return {
+      myChart,
+      findContent,
+      onFind,
+      onReset,
+      total,
+      totalPage,
+      currPage,
+      tableData,
+      typeTableLabel,
+      tableOperationLabel,
+      getPageInfo,
+      getDetailRow,
+      editDetailRow,
+    };
   },
 };
 </script>

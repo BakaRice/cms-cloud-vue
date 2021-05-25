@@ -25,7 +25,7 @@
           <el-col :span="12">
             <el-col :span="12">
               <el-form-item label="手机号" prop="phone" style="display: flex">
-                <el-input v-model="userDetailForm.phone"></el-input>
+                <el-input disabled v-model="userDetailForm.phone"></el-input>
               </el-form-item>
             </el-col>
           </el-col>
@@ -46,8 +46,8 @@
               prop="createTime"
               style="display: flex"
             >
-              <!-- <el-input v-model="userDetailForm.createTime"></el-input> -->
               <el-date-picker
+                disabled
                 v-model="userDetailForm.createTime"
                 type="date"
                 placeholder="选择日期"
@@ -60,12 +60,14 @@
                 v-model="userDetailForm.professionId"
                 placeholder="岗位工种"
               >
-                <el-option label="电焊工" value="5">电焊工</el-option>
-                <el-option label="电焊工" value="5">电焊工</el-option>
-                <el-option label="电焊工" value="5">电焊工</el-option>
-                <el-option label="电焊工" value="5">电焊工</el-option>
-                <el-option label="电焊工" value="5">电焊工</el-option>
-                <el-option label="文书" value="6">文书</el-option>
+                <el-option label="系统管理" :value="1">系统管理</el-option>
+                <el-option label="车工" :value="2">车工</el-option>
+                <el-option label="钳工" :value="3">钳工</el-option>
+                <el-option label="电工" :value="4">电工</el-option>
+                <el-option label="电焊工" :value="5">电焊工</el-option>
+                <el-option label="管理岗" :value="6">管理岗</el-option>
+                <el-option label="文书" :value="7">文书</el-option>
+                <el-option label="书记" :value="8">书记</el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -98,7 +100,6 @@
 import axios from "@/axios/index";
 import router from "@/router";
 import { defineComponent, ref } from "vue";
-import userInfoDetailVue from "./userInfoDetail.vue";
 
 export default defineComponent({
   props: {

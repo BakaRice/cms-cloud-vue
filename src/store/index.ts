@@ -87,7 +87,9 @@ const myActions: ActionTree<State, State> = {
         sessionStorage.setItem("name", userName);
 
         const { setUserRole } = await import("@/role/UserRole.ts");
-        const menuList = setUserRole();
+
+        const menuList = setUserRole(roleId);
+        console.log("setUserRole(roleId)", roleId, menuList);
         commit(vxt.SET_MENULIST, menuList);
         router.push("/index/welcome");
       }

@@ -21,7 +21,7 @@ const name = sessionStorage.getItem("name");
 if (role && roleName && name) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const user = require("@/role/UserRole.ts");
-  const menuList = user.setUserRole();
+  const menuList = user.setUserRole(role);
   store.commit(SET_ROLE, role);
   store.commit(SET_MENULIST, menuList);
   store.commit(UPDATE_USER_NAME, name);

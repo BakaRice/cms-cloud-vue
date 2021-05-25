@@ -1,4 +1,5 @@
 <template>
+  <div></div>
   <div style="text-align: start">
     <h1>质量检测管理</h1>
     <p>
