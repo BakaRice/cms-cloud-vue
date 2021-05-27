@@ -30,6 +30,11 @@ const routes: Array<RouteRecordRaw> = [
       },
       //user相关 员工信息，考勤与排班
       {
+        name: "clockIn",
+        path: "/clockIn",
+        component: () => import("@/views/user/clockIn.vue"),
+      },
+      {
         name: "userInfo",
         path: "/userInfo",
         component: () => import("@/views/user/userInfo.vue"),
@@ -336,6 +341,11 @@ const leaderMenuList: Menu[] = [
         index: "2-3",
         title: "考勤信息",
         path: "/attendance",
+      },
+      {
+        index: "2-4",
+        title: "考勤打卡",
+        path: "/clockIn",
       },
     ],
   },
