@@ -1,6 +1,7 @@
 import { RouteRecordRaw } from "vue-router";
 import { Menu } from "./Menu";
 import router from "@/router/index";
+import component from "*.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -66,6 +67,23 @@ const routes: Array<RouteRecordRaw> = [
         name: "attendance",
         path: "/attendance",
         component: () => import("@/views/user/attendance.vue"),
+      },
+      {
+        name: "leaveRequest",
+        path: "/leave-request",
+        component: () => import("@/views/user/leaveRequest.vue"),
+      },
+      //工单处理
+      {
+        name: "ticketDeal",
+        path: "/ticket-deal",
+        component: () => import("@/views/user/ticketDeal.vue"),
+      },
+      {
+        name: "rosterDetail",
+        path: "/roster-detail/:uid",
+        props: true,
+        component: () => import("@/views/user/rosterDetail.vue"),
       },
       //wms 库存相关 零件 备件存储 出入库管理
       {

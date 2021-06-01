@@ -63,6 +63,7 @@
                         type="button"
                         class="el-button el-button--primary"
                         @click="login"
+                        v-loading.fullscreen.lock="fullscreenLoading"
                       >
                         <span>登录</span>
                       </button>
@@ -85,6 +86,7 @@ import { LOGIN, UPDATE_EXCEPTION, UPDATE_LOADING } from "@/store/VuexTypes";
 
 export default defineComponent({
   setup() {
+    let fullscreenLoading = ref(false);
     const user = ref({ phone: "", password: "" });
     const store = useStore();
     const login = () => {
@@ -92,13 +94,15 @@ export default defineComponent({
       if (user.value.phone == "" || user.value.password == "") {
         store.commit(UPDATE_EXCEPTION, "用户名或密码不能为空");
       } else {
-        store.commit(UPDATE_LOADING, "加载中");
+        // store.commit(UPDATE_LOADING, "加载中");
+        fullscreenLoading.value = true;
         store.dispatch(LOGIN, user.value);
       }
     };
     return {
       user,
       login,
+      fullscreenLoading,
     };
   },
 });

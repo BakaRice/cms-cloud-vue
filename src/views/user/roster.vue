@@ -29,7 +29,11 @@
               </li>
             </ul>
           </div>
-          <div class="container-contanl-left1" style="margin-top: 24px">
+          <div
+            class="container-contanl-left1"
+            style="margin-top: 24px"
+            @click="ticketDealClick"
+          >
             <h1>员工申请处理</h1>
             <ul>
               <li>
@@ -44,17 +48,7 @@
           </div>
         </div>
         <div class="container-contanl-right">
-          <h1>日期选择与操作</h1>
-          <div style="text-align: center">
-            <el-date-picker
-              v-model="timeRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="排班开始日期"
-              end-placeholder="排班结束日期"
-              style="width: 90%"
-            ></el-date-picker>
-          </div>
+          <h1>操作</h1>
           <div class="container-contanl-right-link">
             <img
               src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAt1BMVEUAAAD///8kkv8gf/8cjv8MhvMUevUSe/YRf/YPf/cNfPINgPIMgPMLffQPevUOe/EMe/MMffMMfPMLfvQPfPQOfPQNfPINe/INfPIMfPMMe/MMffMLffEMfPMMe/ELfPIMevMMfPELfPIMevIMe/ILe/ILe/IMevEMevIMe/IMevIMevELe/ELe/ELe/IMevIMe/IMe/IMevIMe/EMevEMe/ELe/ELevILevILevILevILe/ILevG/7fm1AAAAPHRSTlMAAQcICRUZHR4iJygsLTI4Pj9ARUZITE1QVFVWXG1uc3+AiJiZnZ+8wNLV297g5Ojp6+zv8PP19vj6/P3JXrxxAAABFklEQVQ4y83U21LCMBCA4W2pKB5AUarWQ420pUqhFkVR//d/Li+kMxRCknG4cK+SnS+zTTq7IuvRflDr0RdNHIzZCKVxnQlO8GgKi8dG3VwHT17g/byZUxrYncH8VKyw9wavPbHCsznMumKFFx9QHosVXi5geihWeP0Jk45Y4e0XjPfFCq++4bm93ARhHIeBHip42luuowqgirbBejOsf/DQDCOgSJICiEwwqCDzRVoZVIEBhlD4IiKtAkIDjCH5TSUQu8I719IDh8v4GZS+4/OMPLcHh9QzQbmpAMoRkIqI9Ff7unEqCOP7ge+luu7TdZqXqs200k+Dfw7rsZMrpZQywOY42wV0Lr39Mvnq8NwJ1H38n+APHWVuBQbe4FwAAAAASUVORK5CYII="
@@ -89,78 +83,126 @@
         </div>
       </div>
     </div>
-    <div style="display: inline-flex">
-      <h3>今日所属员工排班情况</h3>
-      <el-button type="text" @click="resetDateFilter">清除日期过滤器</el-button>
-      <el-button type="text" @click="clearFilter">清除所有过滤器</el-button>
-    </div>
 
-    <div>
-      <el-table
-        row-key="date"
-        ref="filterTable"
-        :data="todayRoster"
-        style="width: 100%"
-      >
-        <el-table-column
-          prop="uid"
-          :width="160"
-          label="用户编号"
-        ></el-table-column>
-        <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column
-          prop="typeName"
-          label="排班类型"
-          width="180"
-          :filters="typeFilter"
-          :filter-method="filterTag"
-          filter-placement="bottom-end"
+    <div class="roster-edit-container">
+      <div class="roster-edit-container-list">
+        <div style="display: inline-flex">
+          <h3>今日所属员工排班情况</h3>
+        </div>
+        <el-table
+          row-key="date"
+          ref="filterTable"
+          :data="todayRoster"
+          style="width: 100%"
         >
-          <template #default="scope">
-            <div v-if="scope.row.typeName !== null">
-              <el-tag
-                :type="scope.row.typeName === null ? 'primary' : 'success'"
-                disable-transitions
-              >
-                {{ scope.row.typeName }}
-              </el-tag>
-            </div>
-            <div v-else>
-              <el-tag type="warning" disable-transitions>未排班</el-tag>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="startTime"
-          label="开始时间"
-          sortable
-          width="180"
-          column-key="startTime"
-          :filters="startTimeFilter"
-          :filter-method="filterHandler"
-        ></el-table-column>
+          <el-table-column
+            prop="uid"
+            :width="160"
+            label="用户编号"
+          ></el-table-column>
+          <el-table-column prop="name" label="姓名"></el-table-column>
+          <el-table-column
+            prop="typeName"
+            label="排班类型"
+            filter-placement="bottom-end"
+          >
+            <template #default="scope">
+              <div v-if="scope.row.typeName !== null">
+                <el-tag
+                  :type="scope.row.typeName === null ? 'primary' : 'success'"
+                  disable-transitions
+                >
+                  {{ scope.row.typeName }}
+                </el-tag>
+              </div>
+              <div v-else>
+                <el-tag type="warning" disable-transitions>未排班</el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="startTime"
+            label="开始时间"
+            sortable
+            column-key="startTime"
+          ></el-table-column>
 
-        <el-table-column
-          prop="endTime"
-          label="结束时间"
-          sortable
-          width="180"
-          column-key="endTime"
-          :filters="endTimeFilter"
-          :filter-method="filterHandler"
-        ></el-table-column>
-      </el-table>
-      <div class="el-row is-justify-end el-row--flex">
-        <el-pagination
-          background
-          layout="total,prev, pager, next"
-          :page-count="totalPage"
-          :page-size="10"
-          :current-page="currPage"
-          :currentPage="currPage"
-          @current-change="getPageInfo"
-          :total="total"
-        ></el-pagination>
+          <el-table-column
+            prop="endTime"
+            label="结束时间"
+            sortable
+            column-key="endTime"
+          ></el-table-column>
+          <el-table-column label="操作">
+            <template #default="scope">
+              <el-button
+                @click.enter.prevent="
+                  selectDetailRow(scope.$index, todayRoster)
+                "
+                type="text"
+                size="small"
+              >
+                选中
+              </el-button>
+              <el-button
+                @click.enter.prevent="getDetailRow(scope.$index, todayRoster)"
+                type="text"
+                size="small"
+              >
+                详情
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="el-row is-justify-end el-row--flex">
+          <el-pagination
+            background
+            layout="total,prev, pager, next"
+            :page-count="totalPage"
+            :page-size="10"
+            :current-page="currPage"
+            @current-change="getPageInfo"
+            :total="total"
+          ></el-pagination>
+        </div>
+      </div>
+      <div class="roster-edit-container-selected-list">
+        <h3>用户排班操作</h3>
+        <div class="roster-edit-container-selected-button">
+          <el-date-picker
+            v-model="timeRange"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="排班开始日期"
+            end-placeholder="排班结束日期"
+            style="width: 90%"
+          ></el-date-picker>
+          <el-popover
+            type="primary"
+            plain
+            placement="top"
+            :width="160"
+            v-model:visible="visible"
+          >
+            <p>请确认人员排班时间没有发生冲突，若发生冲突，则无法进行排班</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini" type="text" @click="visible = false">
+                取消
+              </el-button>
+              <el-button type="primary" size="mini" @click="visible = false">
+                确定
+              </el-button>
+            </div>
+            <template #reference>
+              <el-button @click="visible = true">添加</el-button>
+            </template>
+          </el-popover>
+        </div>
+
+        <el-table :data="selectUser" stripe>
+          <el-table-column prop="uid" label="uid"></el-table-column>
+          <el-table-column prop="name" label="姓名"></el-table-column>
+        </el-table>
       </div>
     </div>
   </div>
@@ -179,30 +221,25 @@
   </ul>
 </template>
 
-<script>
+<script lang="ts">
+interface roster {
+  uid: string;
+  name: string;
+  startTime: string;
+  endTime: string;
+  type: number;
+  typeName: string;
+}
+interface rosterList {
+  arr: roster[];
+}
 import axios from "@/axios/index";
+import router from "@/router";
+import store from "@/store";
+import { UPDATE_EXCEPTION } from "@/store/VuexTypes";
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  methods: {
-    resetDateFilter() {
-      this.$refs.filterTable.clearFilter("startTime");
-      this.$refs.filterTable.clearFilter("endTime");
-    },
-    clearFilter() {
-      this.$refs.filterTable.clearFilter();
-    },
-    formatter(row, column) {
-      return row.address;
-    },
-    filterTag(value, row) {
-      return row.tag === value;
-    },
-    filterHandler(value, row, column) {
-      const property = column["property"];
-      return row[property] === value;
-    },
-  },
   setup() {
     //读取页面数据 总数，总页数，当前页
 
@@ -269,9 +306,13 @@ export default defineComponent({
         console.log(error);
       }
     );
+    //工单处理
+    const ticketDealClick = () => {
+      router.push("/ticket-deal");
+    };
 
     //获取页面内容
-    const getPageInfo = (cp) => {
+    const getPageInfo = (cp: any) => {
       console.log("通用分页模板:改变页数:", cp, req, currPage.value);
       // if (cp == undefined) {
       //   cp = 1;
@@ -294,6 +335,26 @@ export default defineComponent({
           totalPage.value = resp.data.data.pages;
           setFilter();
         });
+    };
+
+    let selectUser = ref<roster[]>([]);
+    let fSelectUser = [];
+    const selectDetailRow = (index: number, rows: Array<any>) => {
+      console.log(index, rows);
+      const item = rows[index];
+      let v = selectUser.value;
+      if (v.filter((u) => u.uid == item.uid).length == 0) {
+        console.log("item", item);
+        selectUser.value.push(item);
+      } else {
+        console.log("已存在");
+        store.commit(UPDATE_EXCEPTION, `${item.name}已添加，不能重复添加！`);
+      }
+    };
+    const getDetailRow = (index: number, rows: Array<any>) => {
+      console.log("查看排班详情", index, rows);
+      const item = rows[index];
+      router.push(`/roster-detail/${item.uid}`);
     };
 
     //表格数据 临时填充
@@ -346,7 +407,7 @@ export default defineComponent({
         if (e === null) {
           // startTimeFilter.value.push({ text: "未排班", value: null });
         } else {
-          startTimeFilter.value.push({ text: e, value: e });
+          // startTimeFilter.value.push({ text: e, value: e });
         }
       });
       console.log("startTimeFilter", startTimeSet, startTimeFilter);
@@ -361,7 +422,7 @@ export default defineComponent({
         if (e === null) {
           // endTimeFilter.value.push({ text: "未排班", value: null });
         } else {
-          endTimeFilter.value.push({ text: e, value: e });
+          // endTimeFilter.value.push({ text: e, value: e });
         }
       });
 
@@ -375,7 +436,7 @@ export default defineComponent({
         if (e === null) {
           // typeFilter.value.push({ text: "未排班", value: null });
         } else {
-          typeFilter.value.push({ text: e, value: e });
+          // typeFilter.value.push({ text: e, value: e });
         }
       });
       console.log(typeFilter.value);
@@ -394,6 +455,11 @@ export default defineComponent({
       currPage,
       getPageInfo,
       rosterOverview,
+      ticketDealClick, //工单处理
+      selectDetailRow,
+      getDetailRow, //查看排班详情
+      selectUser, //选中的用户
+      visible: ref(false),
     };
   },
 });
@@ -525,6 +591,7 @@ h1 {
   width: 28%;
   box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
   background: #fff;
+  margin-bottom: 16px;
 }
 .container .container-contant h1 {
   line-height: 60px;
@@ -560,5 +627,25 @@ h1 {
   display: flex;
   align-items: center;
   padding: 20px 0;
+}
+.roster-edit-container {
+  display: flex;
+}
+.roster-edit-container-list {
+  width: 65%;
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+.roster-edit-container-selected-list {
+  width: 35%;
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-left: 10px;
+}
+.roster-edit-container-selected-button {
+  text-align: center;
+  display: inline-flex;
 }
 </style>

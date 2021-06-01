@@ -92,6 +92,20 @@
 
         <el-table-column prop="statusName" label="状态"></el-table-column>
       </el-table>
+
+      <!-- pageNum:{{ pageNum }},totalPage:{{ totalPage }},currPage:{{ currPage }} -->
+
+      <div class="el-row is-justify-end el-row--flex">
+        <el-pagination
+          background
+          layout="total,prev, pager, next"
+          :page-count="totalPage"
+          :page-size="10"
+          :current-page="currPage"
+          @current-change="getPageInfo"
+          :total="total"
+        ></el-pagination>
+      </div>
     </div>
   </div>
   <h1>考勤管理</h1>
@@ -167,7 +181,12 @@ export default {
     /************************************************************
      * 网络请求
      ************************************************************/
-    let date = "2021/05/16";
+    let realDate = new Date();
+    let date = `${realDate.getFullYear()}/${
+      realDate.getMonth() + 1
+    }/${realDate.getDate()}`;
+    console.log("date", date);
+
     const total = ref<number>(0); //总数
     let totalPage = ref<number>(0); //总页数
     const currPage = ref<number>(1); //当前页
@@ -185,11 +204,76 @@ export default {
           attdendNum.trip
         );
         console.log(attdendNum, attendNumAn);
+        mychart2Option.series[0].data = [
+          { value: attdendNum.success, name: "正常考勤" },
+          { value: attdendNum.late, name: "迟到" },
+          { value: attdendNum.off, name: "请假" },
+          { value: attdendNum.trip, name: "出差" },
+          { value: attdendNum.early, name: "早退" },
+          { value: attdendNum.undeal, name: "未响应" },
+        ];
+        myCharts.value.chart2.setOption(mychart2Option);
       },
       (error) => {
         console.log(error);
       }
     );
+
+    //获取七日概况数据
+    axios.get(`/pms/leader/seven-attendances-overview?date=${date}`).then(
+      (resp) => {
+        console.log(resp);
+        mychartData = resp.data.data.sevenList;
+        console.log("sevenList", mychartData);
+        myCharts.value.chart1.hideLoading();
+        //设置天数
+        mychartOption.xAxis[0].data = mychartData
+          .map((e) => e.currDate.replace(/-/g, "/"))
+          .reverse();
+        //设置各个值
+        mychartOption.series[0].data = mychartData
+          .map((e) => e.success)
+          .reverse();
+        mychartOption.series[1].data = mychartData.map((e) => e.off).reverse();
+        mychartOption.series[2].data = mychartData.map((e) => e.trip).reverse();
+        mychartOption.series[3].data = mychartData
+          .map((e) => e.undeal)
+          .reverse();
+        mychartOption.series[4].data = mychartData
+          .map((e) => e.early)
+          .reverse();
+
+        myCharts.value.chart1.setOption(mychartOption);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+    //请求内容 默认分页从第一页开始 每页10项内容
+    let req = { pageNum: 1, pageSize: 10 };
+    //获取页面内容
+    const getPageInfo = (cp: number) => {
+      console.log("通用分页模板:改变页数:", cp, req, currPage.value);
+      // if (cp == undefined) {
+      //   cp = 1;
+      // }
+      req.pageNum = cp;
+      currPage.value = cp;
+
+      //进行内容查询
+      axios
+        .get(
+          `/pms/leader/attendances?date=${date}&pageNum=${req.pageNum}&pageSize=${req.pageSize}`
+        )
+        .then((resp) => {
+          console.log(resp);
+          total.value = resp.data.data.total;
+          currPage.value = resp.data.data.pageNum;
+          totalPage.value = resp.data.data.pages;
+          attendList.value = resp.data.data.list;
+        });
+    };
 
     let getDayAttendance = () =>
       axios
@@ -211,7 +295,7 @@ export default {
     /**
      * 员工考勤详情处理
      */
-    let currDay = ref<string | number | boolean>("今日");
+    let currDay = ref<string | number | boolean>(date);
 
     /************************************************************
      * 表格内容处理
@@ -220,6 +304,7 @@ export default {
     const myChart = ref<HTMLElement>(); //也可以用const myChart = ref<any>();
     const myChart2 = ref<HTMLElement>();
 
+    let mychartData: any[] = [{}];
     let mychartOption = {
       color: ["#80FFA5", "#00DDFF", "#37A2FF", "#FF0087", "#FFBF00"],
       title: {
@@ -253,15 +338,7 @@ export default {
         {
           type: "category",
           boundaryGap: false,
-          data: [
-            "2021/05/11",
-            "2021/05/12",
-            "2021/05/13",
-            "2021/05/14",
-            "2021/05/15",
-            "2021/05/16",
-            "2021/05/17",
-          ],
+          data: mychartData.filter((e) => e.currDate),
         },
       ],
       yAxis: [
@@ -449,7 +526,9 @@ export default {
     setTimeout(() => {
       // 绘制图表 chart1
       myCharts.value.chart1 = echarts.init(myChart.value!, { renderer: "svg" });
+      myCharts.value.chart1.showLoading();
       myCharts.value.chart1.setOption(mychartOption);
+
       myCharts.value.chart1.on(
         "click",
         function (params: { name: string | number | boolean }) {
@@ -469,6 +548,10 @@ export default {
       attendNumAn,
       currDay,
       attendList,
+      getPageInfo,
+      totalPage,
+      currPage,
+      total,
     };
   },
 };
