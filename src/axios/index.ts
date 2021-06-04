@@ -63,7 +63,7 @@ axios.interceptors.response.use(
       // 清除本地token和清空vuex中token对象
       // 跳转登录页面
       case 403:
-        error.message = "403:登录过期，请关闭重新进入。";
+        error.message = "403:用户名或密码有误。";
         console.log(error.message);
         // 清除token
         break;

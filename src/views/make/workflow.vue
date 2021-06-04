@@ -225,11 +225,11 @@ export default {
   border: 20px;
   padding: 20px;
   border-radius: 10px;
-  width: 55%;
+  width: 70%;
 }
 .workflow-container-right {
   background-color: white;
-  width: 45%;
+  width: 30%;
   margin-left: 10px;
   padding: 20px;
   border-radius: 10px;

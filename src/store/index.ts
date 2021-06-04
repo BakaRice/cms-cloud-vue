@@ -95,6 +95,7 @@ const myActions: ActionTree<State, State> = {
       }
     } catch (e) {
       // eslint默认禁止空执行体。加一段注释或关闭该检测
+      router.push("/index/welcome");
       console.log(e);
     }
     // 此处向后端发出登录请求。后端返回token以及加密role，置于sessionstorage

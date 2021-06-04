@@ -3,9 +3,9 @@
     <h1>P1</h1>
     {{ result }}
     <br />
-    <button v-if="premission([3, 4])">Edit</button>
+    <button v-if="premission([3, 4, 5])">Edit</button>
     <br />
-    <button v-if="$store.getters.premission([4])">Delete</button>
+    <button v-if="$store.getters.premission([3, 4])">Delete</button>
   </div>
 </template>
 <script lang="ts">

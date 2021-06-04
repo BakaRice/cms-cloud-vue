@@ -173,6 +173,177 @@ const routes: Array<RouteRecordRaw> = [
     redirect: { name: "index" },
   },
 ];
+//所有用户均有的权限
+const defaultRouter: Array<RouteRecordRaw> = [
+  {
+    name: "index",
+    path: "/index",
+    component: () => import("@/views/index.vue"),
+    children: [
+      // {
+      //   path: "/p1",
+      //   component: () => import("@/views/three/P1.vue"),
+      // },
+      // {
+      //   name: "three",
+      //   path: "/three",
+      //   component: () => import("@/views/three/three.vue"),
+      // },
+      // {
+      //   name: "link",
+      //   path: "/linK",
+      //   component: () => import("@/views/three/link.vue"),
+      // },
+      //INDEX WELCOME
+      {
+        name: "welcome",
+        path: "/index/welcome",
+        component: () => import("@/views/welcome.vue"),
+      },
+      //user相关 员工信息，考勤与排班
+      {
+        name: "clockIn",
+        path: "/clockIn",
+        component: () => import("@/views/user/clockIn.vue"),
+      },
+      // {
+      //   name: "userInfo",
+      //   path: "/userInfo",
+      //   component: () => import("@/views/user/userInfo.vue"),
+      // },
+      // {
+      //   name: "userInfoDetail",
+      //   path: "/userInfo/:uid",
+      //   props: true,
+      //   component: () => import("@/views/user/userInfoDetail.vue"),
+      // },
+      // {
+      //   name: "userInfoEdit",
+      //   path: "/userEdit/:uid",
+      //   props: true,
+      //   component: () => import("@/views/user/userInfoEdit.vue"),
+      // },
+      // {
+      //   name: "userInfoAdd",
+      //   path: "/userAdd",
+      //   props: true,
+      //   component: () => import("@/views/user/userAdd.vue"),
+      // },
+      // {
+      //   name: "roster",
+      //   path: "/roster",
+      //   component: () => import("@/views/user/roster.vue"),
+      // },
+      // {
+      //   name: "attendance",
+      //   path: "/attendance",
+      //   component: () => import("@/views/user/attendance.vue"),
+      // },
+      // {
+      //   name: "leaveRequest",
+      //   path: "/leave-request",
+      //   component: () => import("@/views/user/leaveRequest.vue"),
+      // },
+      // //工单处理
+      // {
+      //   name: "ticketDeal",
+      //   path: "/ticket-deal",
+      //   component: () => import("@/views/user/ticketDeal.vue"),
+      // },
+      // {
+      //   name: "rosterDetail",
+      //   path: "/roster-detail/:uid",
+      //   props: true,
+      //   component: () => import("@/views/user/rosterDetail.vue"),
+      // },
+      // //wms 库存相关 零件 备件存储 出入库管理
+      // {
+      //   //零件存储管理
+      //   name: "part",
+      //   path: "/part",
+      //   component: () => import("@/views/warehouse/part.vue"),
+      // },
+      // {
+      //   //备件存储管理
+      //   name: "space-part",
+      //   path: "/space-part",
+      //   component: () => import("@/views/warehouse/spacePart.vue"),
+      // },
+      // {
+      //   // 库存计划管理
+      //   name: "plan",
+      //   path: "/plan",
+      //   component: () => import("@/views/warehouse/plan.vue"),
+      // },
+      // {
+      //   // stream => 出入库计划管理
+      //   name: "stream",
+      //   path: "/stream",
+      //   component: () => import("@/views/warehouse/stream.vue"),
+      // },
+      // //device 设备管理相关
+      // {
+      //   // 加工设备管理
+      //   name: "processDevice",
+      //   path: "/processDevice",
+      //   component: () => import("@/views/device/processDevice.vue"),
+      // },
+      // {
+      //   // 检测设备管理
+      //   name: "testDevice",
+      //   path: "/testDevice",
+      //   component: () => import("@/views/device/testDevice.vue"),
+      // },
+      // {
+      //   // 设备使用计划管理
+      //   name: "planDevice",
+      //   path: "/planDevice",
+      //   component: () => import("@/views/device/planDevice.vue"),
+      // },
+      // //quality 质量管理相关
+      // {
+      //   //"质量级别",
+      //   name: "level",
+      //   path: "/level",
+      //   component: () => import("@/views/quality/level.vue"),
+      // },
+      // {
+      //   // "质量检测",
+      //   name: "detect",
+      //   path: "/detect",
+      //   component: () => import("@/views/quality/detect.vue"),
+      // },
+      // {
+      //   //"质量分析",
+      //   name: "analysis",
+      //   path: "/analysis",
+      //   component: () => import("@/views/quality/analysis.vue"),
+      // },
+      // //make 生产过程相关
+      // {
+      //   name: "workflow",
+      //   path: "/workflow",
+      //   component: () => import("@/views/make/workflow.vue"),
+      // },
+      // {
+      //   // 加工数据分析
+      //   name: "makeAnalysis",
+      //   path: "/makeAnalysis",
+      //   component: () => import("@/views/make/makeAnalysis.vue"),
+      // },
+      // {
+      //   // 加工数据管理
+      //   name: "data",
+      //   path: "/data",
+      //   component: () => import("@/views/make/data.vue"),
+      // },
+    ],
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: { name: "index" },
+  },
+];
 
 // ----------------
 //无权限菜单
@@ -461,6 +632,21 @@ const leaderMenuList: Menu[] = [
     ],
   },
 ];
+//普通用户菜单
+const defaultMenuList: Menu[] = [
+  {
+    index: "2",
+    i: "el-icon-user-solid",
+    title: "员工管理模块",
+    children: [
+      {
+        index: "2-4",
+        title: "考勤打卡",
+        path: "/clockIn",
+      },
+    ],
+  },
+];
 // --------------------
 
 export function setUserRole(roleId: string): Menu[] {
@@ -482,7 +668,9 @@ export function setUserRole(roleId: string): Menu[] {
   }
   if (roleId == "7") {
     console.log("普通用户");
-    return adminMenuList;
+    router.removeRoute("nomatch");
+    defaultRouter.forEach((r) => router.addRoute(r));
+    return defaultMenuList;
   }
   console.log("null!");
   return nullMenuList;

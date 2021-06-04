@@ -64,6 +64,8 @@
 
 <script>
 import * as THREE from "three";
+import { mapGetters } from "vuex";
+import { UPDATE_SIDEBAR_STATUS } from "@/store/VuexTypes";
 import { GridHelper, Raycaster, Vector2 } from "three";
 //glTF加载器 加在外部模型
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -74,7 +76,7 @@ export default {
   data() {
     return {
       message: "没发生任何事情!",
-      threeType: 1,
+      threeType: this.$store.getters.premission([5]) == true ? 0 : 1,
       xylist: [
         {
           color: "",
@@ -108,10 +110,13 @@ export default {
     };
   },
   computed() {
-    return {};
+    return {
+      ...mapGetters(["premission"]),
+    };
   },
   mounted() {
     this.initThree();
+    this.$store.commit(UPDATE_SIDEBAR_STATUS, true);
   },
   methods: {
     threeDetail(i) {
@@ -368,6 +373,7 @@ export default {
   background-color: white;
   margin-left: 10px;
   border-radius: 10px;
+  z-index: 999;
 }
 .select-container {
   display: inline;

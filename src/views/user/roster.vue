@@ -189,7 +189,14 @@
               <el-button size="mini" type="text" @click="visible = false">
                 取消
               </el-button>
-              <el-button type="primary" size="mini" @click="visible = false">
+              <el-button
+                type="primary"
+                size="mini"
+                @click="
+                  visible = false;
+                  postS();
+                "
+              >
                 确定
               </el-button>
             </div>
@@ -198,10 +205,36 @@
             </template>
           </el-popover>
         </div>
+        <div
+          class="roster-edit-container-selected-button"
+          style="align-items: center; margin-top: 10px"
+        >
+          <b>排班类型：</b>
+          <el-select v-model="stvalue" placeholder="请选择排班类型">
+            <el-option
+              v-for="item in schedulingTypeOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </div>
 
         <el-table :data="selectUser" stripe>
           <el-table-column prop="uid" label="uid"></el-table-column>
           <el-table-column prop="name" label="姓名"></el-table-column>
+          <el-table-column prop="name" label="操作">
+            <template #default="scope">
+              <el-button
+                @click.enter.prevent="removeDetailRow(scope.$index, selectUser)"
+                type="text"
+                style="color: crimson"
+                size="small"
+              >
+                移除
+              </el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
     </div>
@@ -230,14 +263,12 @@ interface roster {
   type: number;
   typeName: string;
 }
-interface rosterList {
-  arr: roster[];
-}
 import axios from "@/axios/index";
 import router from "@/router";
 import store from "@/store";
 import { UPDATE_EXCEPTION } from "@/store/VuexTypes";
 import { defineComponent, ref } from "vue";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
   setup() {
@@ -271,6 +302,7 @@ export default defineComponent({
 
     //请求内容 默认分页从第一页开始 每页10项内容
     let req = { pageNum: 1, pageSize: 10 };
+    //获取当日排班列表
     axios
       .get(
         "/pms/leader/roster?pageNum=" +
@@ -297,6 +329,7 @@ export default defineComponent({
       unDealUserCount: 7,
       userCount: 11,
     });
+    //获取排班概况数据
     axios.get("/pms/leader/roster-overview").then(
       (resp) => {
         console.log(resp);
@@ -337,8 +370,70 @@ export default defineComponent({
         });
     };
 
+    let stvalue = ref();
     let selectUser = ref<roster[]>([]);
-    let fSelectUser = [];
+    //批量更新排班信息
+    let postS = () => {
+      if (timeRange.value == undefined || stvalue.value == null) {
+        store.commit(UPDATE_EXCEPTION, "时间选中或类型选中不能为空");
+        return;
+      }
+      if (selectUser.value.length == 0) {
+        store.commit(UPDATE_EXCEPTION, "人员列表选中不能为空");
+        return;
+      }
+      let data = {
+        endTime: timeRange.value[1],
+        schedulingTypeId: stvalue.value,
+        startTime: timeRange.value[0],
+        userCommonRequestList: selectUser.value.map((e) => ({ id: e.uid })),
+      };
+      console.log(data);
+
+      axios.post("/pms/leader/schedules", data).then(
+        (resp) => {
+          console.log(resp);
+          router.push("roster");
+          ElMessage.success({
+            message: "成功添加用户排班信息",
+            type: "success",
+          });
+          timeRange.value = null;
+          selectUser.value = [];
+          stvalue.value = null;
+          //更新完排班数据后 查询数据更新
+          axios
+            .get(
+              `/pms/leader/roster?pageNum=${req.pageNum}&pageSize=${req.pageSize}`
+            )
+            .then(
+              (resp) => {
+                console.log("获取当天排班情况");
+                todayRoster.value = resp.data.data.list;
+                total.value = resp.data.data.total;
+                currPage.value = resp.data.data.pageNum;
+                totalPage.value = resp.data.data.pages;
+                setFilter();
+              },
+              (error) => {
+                console.log(error);
+              }
+            );
+          axios.get("/pms/leader/roster-overview").then(
+            (resp) => {
+              console.log(resp);
+              rosterOverview.value = resp.data.data;
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    };
     const selectDetailRow = (index: number, rows: Array<any>) => {
       console.log(index, rows);
       const item = rows[index];
@@ -349,12 +444,19 @@ export default defineComponent({
       } else {
         console.log("已存在");
         store.commit(UPDATE_EXCEPTION, `${item.name}已添加，不能重复添加！`);
+        console.log(timeRange);
       }
     };
     const getDetailRow = (index: number, rows: Array<any>) => {
       console.log("查看排班详情", index, rows);
       const item = rows[index];
       router.push(`/roster-detail/${item.uid}`);
+    };
+    const removeDetailRow = (index: number, rows: Array<any>) => {
+      console.log("移除人", index, rows);
+      const item = rows[index];
+      let v = selectUser.value;
+      selectUser.value = v.filter((u) => u.uid != item.uid);
     };
 
     //表格数据 临时填充
@@ -459,7 +561,28 @@ export default defineComponent({
       selectDetailRow,
       getDetailRow, //查看排班详情
       selectUser, //选中的用户
+      removeDetailRow, //移除选中
       visible: ref(false),
+      schedulingTypeOption: [
+        {
+          value: "1",
+          label: "冬令时白班",
+        },
+        {
+          value: "2",
+          label: "冬令时夜班",
+        },
+        {
+          value: "3",
+          label: "夏令时白班",
+        },
+        {
+          value: "4",
+          label: "夏令时夜班",
+        },
+      ],
+      stvalue, //选中的排版类型
+      postS, //上传排班类型
     };
   },
 });
