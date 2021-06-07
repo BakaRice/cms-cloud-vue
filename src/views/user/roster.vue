@@ -135,17 +135,18 @@
           ></el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
+              <!-- {{ scope.$index }}
+              {{ scope.row }} -->
+
               <el-button
-                @click.enter.prevent="
-                  selectDetailRow(scope.$index, todayRoster)
-                "
+                @click.enter.prevent="selectDetailRow(scope.row, todayRoster)"
                 type="text"
                 size="small"
               >
                 选中
               </el-button>
               <el-button
-                @click.enter.prevent="getDetailRow(scope.$index, todayRoster)"
+                @click.enter.prevent="getDetailRow(scope.row, todayRoster)"
                 type="text"
                 size="small"
               >
@@ -434,10 +435,20 @@ export default defineComponent({
         }
       );
     };
-    const selectDetailRow = (index: number, rows: Array<any>) => {
+    const selectDetailRow = (index: any, rows: Array<any>) => {
       console.log(index, rows);
-      const item = rows[index];
+      // const item = rows[index];
+      const item = index;
       let v = selectUser.value;
+      console.log("index", index);
+
+      console.log(
+        "findBug",
+        item,
+        v,
+        v.filter((u) => u.uid == item.uid)
+      );
+
       if (v.filter((u) => u.uid == item.uid).length == 0) {
         console.log("item", item);
         selectUser.value.push(item);
@@ -447,9 +458,9 @@ export default defineComponent({
         console.log(timeRange);
       }
     };
-    const getDetailRow = (index: number, rows: Array<any>) => {
+    const getDetailRow = (index: any, rows: Array<any>) => {
       console.log("查看排班详情", index, rows);
-      const item = rows[index];
+      const item = index;
       router.push(`/roster-detail/${item.uid}`);
     };
     const removeDetailRow = (index: number, rows: Array<any>) => {

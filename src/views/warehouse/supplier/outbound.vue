@@ -1,28 +1,26 @@
 <template>
-  <!-- <barcode cdata="w111" key="111"></barcode>
-  <barcode cdata="w222" key="222"></barcode> -->
   <div v-if="selectWarehouseId != null">
-    <div v-if="inputSchema == true">
+    <div v-if="outputSchema == true">
       <el-alert
         title="扫码模式进行中"
         type="warning"
-        description="请确保扫描入库商品类型和数量的正确性"
+        description="请确保扫描出库商品类型和数量的正确性"
         show-icon
         style="text-align: start"
       ></el-alert>
       <h1 style="font-size: xxx-large">
-        <span style="color: red">扫码枪入库进行中</span>
+        <span style="color: red">扫码枪出库进行中</span>
         <br />
         已录入【
-        <span style="color: red">{{ inboundDetailList.length }}</span>
+        <span style="color: red">{{ outboundDetailList.length }}</span>
         】件 新增编码:【
         <span style="color: red">{{ preCode }}</span>
         】
       </h1>
     </div>
     <div class="inbound-container">
-      <div class="inbound-input-container">
-        <h1>入库输入</h1>
+      <div class="inbound-output-container">
+        <h1>出库输入</h1>
         <div>
           <el-input
             placeholder="请输入内容"
@@ -38,7 +36,7 @@
             :fetch-suggestions="querySearch"
             placeholder="请输入零件名称"
             @select="handleSelect"
-            :disabled="inputSchema"
+            :disabled="outputSchema"
           >
             <template #prepend>零件名称</template>
           </el-autocomplete>
@@ -49,7 +47,7 @@
             <!-- 扫码模式确定 -->
             <el-switch
               style="display: block"
-              v-model="inputSchema"
+              v-model="outputSchema"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="手动输入"
@@ -66,57 +64,24 @@
               @change="strictModeSure"
             ></el-switch>
           </div>
-          <div style="padding: 0px 8px; width: 40%">
-            <el-select
-              v-model="singleInboundDetail.cargoSupplierId"
-              filterable
-              placeholder="供应商选择"
-              :disabled="inputSchema"
-            >
-              <el-option
-                v-for="supplier in supplierList"
-                :key="supplier.id"
-                :label="supplier.supplierName"
-                :value="supplier.id"
-              ></el-option>
-            </el-select>
-            <el-select
-              v-model="singleInboundDetail.cargoType"
-              filterable
-              placeholder="零件类型选择"
-              :disabled="inputSchema"
-            >
-              <el-option label="零件" value="1"></el-option>
-              <el-option label="备件" value="0"></el-option>
-              <el-option label="其他" disabled></el-option>
-            </el-select>
-          </div>
         </div>
       </div>
       <div class="inbound-show-container">
-        <!-- {{ inboundDetailList }} -->
-        <!-- <div v-for="(inboundDetail, index) in inboundDetailList" :key="index">
+        <!-- {{ outboundDetailList }} -->
+        <!-- <div v-for="(inboundDetail, index) in outboundDetailList" :key="index">
           {{ inboundDetail }}
         </div> -->
 
         <el-table
-          :data="inboundDetailList"
+          :data="outboundDetailList"
           stripe
           style="width: 100%"
           max-height="450"
         >
           <el-table-column prop="cargoCode" label="cargoCode" width="250">
             <template #default="scope">
-              <!-- {{ scope.row.cargoCode }} -->
-              <div
-                v-if="
-                  inboundDetailList.length > 0 && scope.row.cargoCode !== null
-                "
-              >
-                <barcode
-                  :cdata="scope.row.cargoCode"
-                  :key="scope.row.cargoCode"
-                ></barcode>
+              <div v-if="scope.row.cargoCode !== null">
+                <barcode :cdata="scope.row.cargoCode"></barcode>
               </div>
               <div v-else>
                 <p>null!</p>
@@ -133,7 +98,7 @@
         </el-table>
       </div>
     </div>
-    <el-button type="warning" plain @click="postInbound">生成入库</el-button>
+    <el-button type="warning" plain @click="postInbound">生成出库</el-button>
   </div>
   <div v-else class="inbound-select-warehouse-container">
     <h1>
@@ -189,7 +154,7 @@ interface Warehouse {
 }
 interface InboundRequest {
   warehouse: Warehouse;
-  warehouseInboundDetailList: WarehouseInboundDetail[];
+  warehouseOutboundDetailList: WarehouseInboundDetail[];
 }
 interface supplier {
   value?: string;
@@ -207,18 +172,18 @@ export default defineComponent({
   },
   setup() {
     //输入模式 手动或扫码
-    let inputSchema = ref(false);
+    let outputSchema = ref(false);
     //严格模式 是否需要输入两遍
     let strictMode = ref(false);
     /**
      * 输入默认确认
      */
     const schemaSure = () => {
-      if (inputSchema.value == true) {
+      if (outputSchema.value == true) {
         ElNotification({
           title: "扫码模式开启",
           type: "warning",
-          message: "扫码模式开启后，请确保扫描入库商品类型和数量的正确性",
+          message: "扫码模式开启后，请确保扫描出库商品类型和数量的正确性",
         });
       }
     };
@@ -230,7 +195,7 @@ export default defineComponent({
         ElNotification({
           title: "严格模式开启",
           type: "warning",
-          message: "严格模式开启后，入库时需要进行双重确认才能入库",
+          message: "严格模式开启后，出库时需要进行双重确认才能出库",
         });
       }
     };
@@ -241,7 +206,7 @@ export default defineComponent({
     let selectWarehouseId = ref<number>();
 
     /**
-     * 单个入库细节 用于输入库
+     * 单个出库细节 用于输出库
      */
     let singleInboundDetail = ref<WarehouseInboundDetail>({
       cargoCode: "",
@@ -251,17 +216,17 @@ export default defineComponent({
       cargoSupplierName: "",
     });
 
-    let inboundDetailList = ref<WarehouseInboundDetail[]>([]);
+    let outboundDetailList = ref<WarehouseInboundDetail[]>([]);
     let inboundSet = new Set();
     let preCode = ref("");
     //自动扫码状态 扫码
     const pushInboundList = () => {
       //非手动模型下不允许使用回车键入
-      if (inputSchema.value == false) return;
+      if (outputSchema.value == false) return;
       let data = singleInboundDetail.value;
       console.log(data);
       commonPushDetail(data);
-      console.log(inboundDetailList.value);
+      console.log(outboundDetailList.value);
       singleInboundDetail.value.cargoCode = "";
     };
     const beforeSchemaSure = () => {
@@ -281,7 +246,7 @@ export default defineComponent({
       if (!inboundSet.has(data.cargoCode)) {
         console.log(inboundSet);
         data.cargoSupplierName;
-        inboundDetailList.value.unshift({ ...data });
+        outboundDetailList.value.unshift({ ...data });
         inboundSet.add(data.cargoCode);
         preCode.value = data.cargoCode;
       } else {
@@ -297,15 +262,15 @@ export default defineComponent({
     let postInbound = () => {
       let data: InboundRequest = {
         warehouse: { id: selectWarehouseId.value },
-        warehouseInboundDetailList: inboundDetailList.value,
+        warehouseOutboundDetailList: outboundDetailList.value,
       };
       const POST_INBOUND_URI = "/pms/warehouse/inbound";
       if (
         data == undefined ||
         data.warehouse.id == null ||
-        data.warehouseInboundDetailList.length <= 0
+        data.warehouseOutboundDetailList.length <= 0
       ) {
-        store.commit(UPDATE_EXCEPTION, "入库单数据不完整无法进行入库操作");
+        store.commit(UPDATE_EXCEPTION, "出库单数据不完整无法进行出库操作");
         return;
       }
       console.log(data);
@@ -313,9 +278,9 @@ export default defineComponent({
       axios.post(POST_INBOUND_URI, data).then((resp) => {
         console.log(resp);
         ElNotification({
-          title: "入库单创建成功",
+          title: "出库单创建成功",
           type: "success",
-          message: "入库单创建已经成功，请尽快将货物入库",
+          message: "出库单创建已经成功，请尽快将货物出库",
         });
         router.push("/stream");
       });
@@ -394,7 +359,7 @@ export default defineComponent({
       loadAllType();
     });
     return {
-      inputSchema,
+      outputSchema,
       beforeSchemaSure,
       schemaSure,
       strictMode,
@@ -402,9 +367,9 @@ export default defineComponent({
       selectWarehouseId,
       warehouseList,
       selectWarehouse, //选择仓库
-      singleInboundDetail, //单个入库单细节
+      singleInboundDetail, //单个出库单细节
       pushInboundList, //添加到列表
-      inboundDetailList,
+      outboundDetailList,
       preCode,
       querySearch,
       handleSelect,
@@ -419,7 +384,7 @@ export default defineComponent({
 .inbound-container {
   display: flex;
 }
-.inbound-input-container {
+.inbound-output-container {
   width: 30%;
   background-color: white;
   border-radius: 10px;

@@ -110,6 +110,12 @@ const routes: Array<RouteRecordRaw> = [
         path: "/inbound",
         component: () => import("@/views/warehouse/supplier/inbound.vue"),
       },
+      //入库单
+      {
+        name: "outbound",
+        path: "/outbound",
+        component: () => import("@/views/warehouse/supplier/outbound.vue"),
+      },
       {
         //备件存储管理
         name: "space-part",
