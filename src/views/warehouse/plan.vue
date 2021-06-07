@@ -122,16 +122,18 @@
 import { ref } from "vue";
 import { UPDATE_EXCEPTION } from "@/store/VuexTypes";
 import store from "@/store";
+import axios from "@/axios/index";
+import router from "@/router";
 export default {
   setup() {
     //提前定义数据内容 列表格式
     //定义种类列表
     const typeTableLabel = [
-      { label: "id", width: "40", prop: "id" },
+      { label: "供应商编号", width: "80", prop: "supplierId" },
       { label: "供应商名称", width: "", prop: "supplierName" },
-      { label: "供应商编号", width: "", prop: "supplierId" },
-      { label: "供应总类数", width: "200", prop: "cargoTypeTotal" },
-      { label: "供应总数", width: "", prop: "cargoTotal" },
+
+      { label: "供应总类数", width: "200", prop: "totalTypeNum" },
+      { label: "供应总数", width: "", prop: "totalNum" },
     ];
     //提前定义操作内容 列表格式
     const tableOperationLabel = [{ label: "操作", width: "", prop: "detail" }];
@@ -194,6 +196,20 @@ export default {
     //请求内容 默认分页从第一页开始 每页10项内容
     let req = { pageNum: 1, pageSize: 10 };
 
+    const GET_SUPPILER_OVERVIEW_URI = "/pms/supplier";
+    axios
+      .get(
+        `${GET_SUPPILER_OVERVIEW_URI}?pageNum=${req.pageNum}&pageSize=${req.pageSize}`
+      )
+      .then((res) => {
+        console.log(res);
+        let data = res.data.data;
+        tableData.value = data.list;
+        total.value = data.total;
+        totalPage.value = data.pages;
+        currPage.value = data.pageNum;
+      });
+
     //查询内容
     let findContent = ref({
       get: "",
@@ -204,7 +220,6 @@ export default {
         store.commit(UPDATE_EXCEPTION, "查询内容不能为空！");
       } else {
         // axiosGetonFind();
-        console.log("PART 查询功能未实现！");
       }
     };
 
@@ -238,28 +253,29 @@ export default {
       console.log("获取分页内容未实现!");
 
       // //进行内容查询
-      // axios
-      //   .get(
-      //     "/pms/leader/infos?pageNum=" +
-      //       req.pageNum +
-      //       "&pageSize=" +
-      //       req.pageSize
-      //   )
-      //   .then((resp) => {
-      //     total.value = resp.data.data.total;
-      //     currPage.value = resp.data.data.pageNum;
-      //     totalPage.value = resp.data.data.pages;
-      //     tableData.value = resp.data.data.list;
-      //   });
+      axios
+        .get(
+          `${GET_SUPPILER_OVERVIEW_URI}?pageNum=${req.pageNum}&pageSize=${req.pageSize}`
+        )
+        .then((res) => {
+          console.log(res);
+          let data = res.data.data;
+          tableData.value = data.list;
+          total.value = data.total;
+          totalPage.value = data.pages;
+          currPage.value = data.pageNum;
+        });
     };
 
     const getDetailRow = (index: number, rows: Array<any>) => {
       // rows.splice(index, 1);
       console.log(index, rows);
-      // const uid = rows[index].idString;
-      // router.push({
-      //   path: "/userInfo/" + uid,
-      // });
+      const sid = rows[index].supplierId;
+      console.log(sid);
+
+      router.push({
+        path: "/supplier/" + sid,
+      });
     };
 
     const editDetailRow = (index: number, rows: Array<any>) => {

@@ -92,6 +92,24 @@ const routes: Array<RouteRecordRaw> = [
         path: "/part",
         component: () => import("@/views/warehouse/part.vue"),
       },
+      //供应商相关
+      {
+        name: "supplier",
+        path: "/supplier",
+        component: () => import("@/views/warehouse/supplier/supplier.vue"),
+      },
+      //供应商相关
+      {
+        name: "supplier-detail",
+        path: "/supplier/:sid",
+        component: () => import("@/views/warehouse/supplier/supplier.vue"),
+      },
+      //入库单
+      {
+        name: "inbound",
+        path: "/inbound",
+        component: () => import("@/views/warehouse/supplier/inbound.vue"),
+      },
       {
         //备件存储管理
         name: "space-part",
@@ -155,6 +173,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/make/workflow.vue"),
       },
       {
+        name: "barcode-js",
+        path: "/barcode-js/:cdata",
+        props: true,
+        component: () => import("@/views/make/barcode-js.vue"),
+      },
+      {
         // 加工数据分析
         name: "makeAnalysis",
         path: "/makeAnalysis",
@@ -165,6 +189,11 @@ const routes: Array<RouteRecordRaw> = [
         name: "data",
         path: "/data",
         component: () => import("@/views/make/data.vue"),
+      },
+      {
+        name: "makeflow",
+        path: "/makeflow",
+        component: () => import("@/views/make/makeflow.vue"),
       },
     ],
   },
@@ -628,6 +657,11 @@ const leaderMenuList: Menu[] = [
         index: "6-3",
         title: "加工数据分析",
         path: "/makeAnalysis",
+      },
+      {
+        index: "6-4",
+        title: "生产流程管理",
+        path: "/makeflow",
       },
     ],
   },

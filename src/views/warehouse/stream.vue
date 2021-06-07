@@ -14,7 +14,10 @@
           <el-form-item>
             <el-button type="primary" @click="onFind">查询</el-button>
             <el-button @click="onReset">重置</el-button>
-            <el-button type="primary" @click="onReset">新增</el-button>
+            <el-button type="primary" @click="createBound('/inbound')">
+              新增入库
+            </el-button>
+            <el-button type="primary" @click="onReset">新增出库</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -92,6 +95,8 @@
 import { ref } from "vue";
 import { UPDATE_EXCEPTION } from "@/store/VuexTypes";
 import store from "@/store";
+import router from "@/router";
+
 export default {
   setup() {
     //提前定义数据内容 列表格式
@@ -176,6 +181,9 @@ export default {
     let findContent = ref({
       get: "",
     });
+    const createBound = (URI: string) => {
+      router.push(URI);
+    };
     const onFind = () => {
       console.log("userinfo查询接口", findContent.value);
       if (findContent.value.get === null || findContent.value.get === "") {
@@ -262,6 +270,7 @@ export default {
       getPageInfo,
       getDetailRow,
       editDetailRow,
+      createBound,
     };
   },
 };

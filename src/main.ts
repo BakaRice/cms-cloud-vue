@@ -6,6 +6,7 @@ import ElementPlus from "element-plus";
 import "element-plus/lib/theme-chalk/index.css";
 import "dayjs/locale/zh-cn";
 import locale from "element-plus/lib/locale/lang/zh-cn";
+
 import {
   SET_MENULIST,
   SET_ROLE,
@@ -27,7 +28,6 @@ if (role && roleName && name) {
   store.commit(UPDATE_USER_NAME, name);
   store.commit(SET_ROLE_NAME, roleName);
 }
-
 createApp(App)
   .use(store)
   .use(router)
