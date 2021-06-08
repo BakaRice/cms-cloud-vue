@@ -17,7 +17,9 @@
             <el-button type="primary" @click="createBound('/inbound')">
               新增入库
             </el-button>
-            <el-button type="primary" @click="onReset">新增出库</el-button>
+            <el-button type="primary" @click="createBound('/outbound')">
+              新增出库
+            </el-button>
           </el-form-item>
         </el-form>
       </div>

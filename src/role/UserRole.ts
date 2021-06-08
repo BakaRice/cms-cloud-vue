@@ -201,6 +201,12 @@ const routes: Array<RouteRecordRaw> = [
         path: "/makeflow",
         component: () => import("@/views/make/makeflow.vue"),
       },
+      {
+        name: "work-label",
+        path: "/work-label/:cargoCode",
+        props: true,
+        component: () => import("@/views/make/user/work-label.vue"),
+      },
     ],
   },
   {

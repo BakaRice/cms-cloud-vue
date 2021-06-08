@@ -29,17 +29,6 @@
           >
             <template #prepend>扫码零件编码</template>
           </el-input>
-
-          <el-autocomplete
-            style="margin-top: 15px; width: 100%"
-            v-model="singleInboundDetail.cargoName"
-            :fetch-suggestions="querySearch"
-            placeholder="请输入零件名称"
-            @select="handleSelect"
-            :disabled="outputSchema"
-          >
-            <template #prepend>零件名称</template>
-          </el-autocomplete>
         </div>
 
         <div style="margin-top: 15px; margin-top: 15px; display: flex">
@@ -64,6 +53,12 @@
               @change="strictModeSure"
             ></el-switch>
           </div>
+        </div>
+
+        <div v-if="outputSchema == false">
+          <el-button type="success" @click="pushOutboundListByHand">
+            手动输入
+          </el-button>
         </div>
       </div>
       <div class="inbound-show-container">
@@ -98,30 +93,23 @@
         </el-table>
       </div>
     </div>
-    <el-button type="warning" plain @click="postInbound">生成出库</el-button>
+    <el-button type="warning" plain @click="postOutbound">生成出库</el-button>
   </div>
   <div v-else class="inbound-select-warehouse-container">
-    <h1>
-      选择仓库
-      <div>
-        <el-radio
-          v-model="selectWarehouseId"
-          :label="warehouse.id"
-          border
-          v-for="(warehouse, index) in warehouseList"
-          :key="index"
-          @change="selectWarehouse(warehouse)"
-        >
-          {{ warehouse.warehouseName }}
-        </el-radio>
-      </div>
-    </h1>
+    <h1>选择仓库出库</h1>
+    <div>
+      <el-radio
+        v-model="selectWarehouseId"
+        :label="warehouse.id"
+        border
+        v-for="(warehouse, index) in warehouseList"
+        :key="index"
+        @change="selectWarehouse(warehouse)"
+      >
+        {{ warehouse.warehouseName }}
+      </el-radio>
+    </div>
   </div>
-
-  <hr />
-  {{ selectWarehouseId }}
-
-  <hr />
 </template>
 
 <script lang="ts">
@@ -152,9 +140,9 @@ interface Warehouse {
   warehouseStatus?: number;
   warehouseType?: number;
 }
-interface InboundRequest {
+interface OutboundRequest {
   warehouse: Warehouse;
-  warehouseOutboundDetailList: WarehouseInboundDetail[];
+  cargoCodeList: string[];
 }
 interface supplier {
   value?: string;
@@ -223,12 +211,50 @@ export default defineComponent({
     const pushInboundList = () => {
       //非手动模型下不允许使用回车键入
       if (outputSchema.value == false) return;
-      let data = singleInboundDetail.value;
-      console.log(data);
-      commonPushDetail(data);
-      console.log(outboundDetailList.value);
-      singleInboundDetail.value.cargoCode = "";
+
+      //判断输入零件编号是否在仓库内 已存在 不存在则不能加入
+      let code = singleInboundDetail.value.cargoCode;
+      const GET_CARGO_BY_CARGOCODE_URI = `/pms/warehouse/cargoCode?cargoCode=${code}`;
+      axios.get(GET_CARGO_BY_CARGOCODE_URI).then((resp) => {
+        console.log(resp);
+        let data = resp.data.data;
+        if (data == null) {
+          let msg = `【${code}】该货物编码在库存中无法查询到,请核对编码输入内容，或联系上级管理员`;
+          ElNotification({
+            title: "库存查询失败",
+            type: "error",
+            message: msg,
+          });
+        }
+        console.log(data);
+        commonPushDetail(data);
+        console.log(outboundDetailList.value);
+        singleInboundDetail.value.cargoCode = "";
+      });
     };
+
+    const pushOutboundListByHand = () => {
+      //判断输入零件编号是否在仓库内 已存在 不存在则不能加入
+      let code = singleInboundDetail.value.cargoCode;
+      const GET_CARGO_BY_CARGOCODE_URI = `/pms/warehouse/cargoCode?cargoCode=${code}`;
+      axios.get(GET_CARGO_BY_CARGOCODE_URI).then((resp) => {
+        console.log(resp);
+        let data = resp.data.data;
+        if (data == null) {
+          let msg = `【${code}】该货物编码在库存中无法查询到,请核对编码输入内容，或联系上级管理员`;
+          ElNotification({
+            title: "库存查询失败",
+            type: "error",
+            message: msg,
+          });
+        }
+        console.log(data);
+        commonPushDetail(data);
+        console.log(outboundDetailList.value);
+        singleInboundDetail.value.cargoCode = "";
+      });
+    };
+
     const beforeSchemaSure = () => {
       // status2.loading2 = true
       console.log("beforeSchemaSure");
@@ -258,24 +284,27 @@ export default defineComponent({
         });
       }
     };
-    let requestBody = ref<InboundRequest>();
-    let postInbound = () => {
-      let data: InboundRequest = {
+    let requestBody = ref<OutboundRequest>();
+    let postOutbound = () => {
+      let odl: string[] = outboundDetailList.value.map((e) => e.cargoCode);
+      let data: OutboundRequest = {
         warehouse: { id: selectWarehouseId.value },
-        warehouseOutboundDetailList: outboundDetailList.value,
+        cargoCodeList: odl,
       };
-      const POST_INBOUND_URI = "/pms/warehouse/inbound";
+      console.log(data);
+
+      const POST_OUTBOUND_URI = "/pms/warehouse/outbound";
       if (
         data == undefined ||
         data.warehouse.id == null ||
-        data.warehouseOutboundDetailList.length <= 0
+        data.cargoCodeList.length <= 0
       ) {
         store.commit(UPDATE_EXCEPTION, "出库单数据不完整无法进行出库操作");
         return;
       }
       console.log(data);
 
-      axios.post(POST_INBOUND_URI, data).then((resp) => {
+      axios.post(POST_OUTBOUND_URI, data).then((resp) => {
         console.log(resp);
         ElNotification({
           title: "出库单创建成功",
@@ -374,7 +403,8 @@ export default defineComponent({
       querySearch,
       handleSelect,
       supplierList,
-      postInbound,
+      postOutbound,
+      pushOutboundListByHand,
     };
   },
 });

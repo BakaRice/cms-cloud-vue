@@ -1,6 +1,4 @@
 <template>
-  <!-- <barcode cdata="w111" key="111"></barcode>
-  <barcode cdata="w222" key="222"></barcode> -->
   <div v-if="selectWarehouseId != null">
     <div v-if="inputSchema == true">
       <el-alert
@@ -36,11 +34,11 @@
             style="margin-top: 15px; width: 100%"
             v-model="singleInboundDetail.cargoName"
             :fetch-suggestions="querySearch"
-            placeholder="请输入零件名称"
+            placeholder="请输入货品名称"
             @select="handleSelect"
             :disabled="inputSchema"
           >
-            <template #prepend>零件名称</template>
+            <template #prepend>货品名称</template>
           </el-autocomplete>
         </div>
 
@@ -113,10 +111,12 @@
                   inboundDetailList.length > 0 && scope.row.cargoCode !== null
                 "
               >
-                <barcode
-                  :cdata="scope.row.cargoCode"
-                  :key="scope.row.cargoCode"
-                ></barcode>
+                <div class="images" v-viewer="{ movable: false }">
+                  <barcode
+                    :cdata="scope.row.cargoCode"
+                    :key="scope.row.cargoCode"
+                  ></barcode>
+                </div>
               </div>
               <div v-else>
                 <p>null!</p>
@@ -136,27 +136,20 @@
     <el-button type="warning" plain @click="postInbound">生成入库</el-button>
   </div>
   <div v-else class="inbound-select-warehouse-container">
-    <h1>
-      选择仓库
-      <div>
-        <el-radio
-          v-model="selectWarehouseId"
-          :label="warehouse.id"
-          border
-          v-for="(warehouse, index) in warehouseList"
-          :key="index"
-          @change="selectWarehouse(warehouse)"
-        >
-          {{ warehouse.warehouseName }}
-        </el-radio>
-      </div>
-    </h1>
+    <h1>选择仓库入库</h1>
+    <div>
+      <el-radio
+        v-model="selectWarehouseId"
+        :label="warehouse.id"
+        border
+        v-for="(warehouse, index) in warehouseList"
+        :key="index"
+        @change="selectWarehouse(warehouse)"
+      >
+        {{ warehouse.warehouseName }}
+      </el-radio>
+    </div>
   </div>
-
-  <hr />
-  {{ selectWarehouseId }}
-
-  <hr />
 </template>
 
 <script lang="ts">
@@ -168,6 +161,8 @@ import axios from "@/axios/index";
 import store from "@/store";
 import { UPDATE_EXCEPTION } from "@/store/VuexTypes";
 import router from "@/router";
+import "viewerjs/dist/viewer.css";
+import { directive as viewer } from "v-viewer";
 
 interface WarehouseInboundDetail {
   cargoCode: string;
@@ -202,6 +197,17 @@ interface supplier {
 }
 
 export default defineComponent({
+  directives: {
+    viewer: viewer({
+      debug: true,
+    }),
+  },
+  methods: {
+    show() {
+      const viewer = this.$el.querySelector(".images").$viewer;
+      viewer.show();
+    },
+  },
   components: {
     barcode,
   },
@@ -437,5 +443,6 @@ export default defineComponent({
   border-radius: 10px;
   padding: 10px;
   margin-left: 10px;
+  height: 600px;
 }
 </style>
