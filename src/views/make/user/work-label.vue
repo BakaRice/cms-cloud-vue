@@ -1,5 +1,12 @@
 <template>
   <div class="work-lable-container">
+    <div v-if="seqFinishFlag">
+      <el-alert
+        title="当前工序加工完成"
+        type="success"
+        effect="dark"
+      ></el-alert>
+    </div>
     <div class="work-lable-up-container">
       <div
         class="class-work-lable-left-container"
@@ -86,28 +93,105 @@
       </div>
     </div>
     <div class="work-lable-down-container">
-      <div class="class-work-lable-left-container">DOWN -LEFT</div>
-      <div class="class-wrok-lable-right-container">DOWN-RIGHT</div>
+      <div class="class-work-lable-left-container">
+        <!-- 作业指导书内容 -->
+        <div class="work-book-detail-container">
+          <div class="workflow-container" v-if="workBook.workNo != undefined">
+            <div class="workflow-container-left">
+              <h1>作业步骤分解</h1>
+              <div
+                class="workflow-container-right"
+                style="text-align: start; border-style: groove; padding: 10px"
+              >
+                <h1>作业基本信息</h1>
+                {{ workBook.workNo }}
+                <p style="color: red">作业名:{{ workBook.workName }}</p>
+                <p>劳保工具:{{ workBook.userProtectionTools }}</p>
+                <p>加工工具:{{ workBook.userTools }}</p>
+                <p>零件名:{{ workBook.partName }}</p>
+                <p style="color: red">工序号:{{ workBook.sequence }}</p>
+                <p>禁止事项:{{ workBook.ban }}</p>
+                <p>其他事项:{{ workBook.other }}</p>
+              </div>
+              <div v-for="o in process" :key="o" class="process-card">
+                <el-card class="box-card">
+                  <h2 v-if="o.processNo != null">步骤{{ o.processNo }}</h2>
+                  <h2 v-else>步骤{{ o.id }}</h2>
+
+                  <p>作业分解:{{ o.explanation }}</p>
+                  <p v-if="o.minutues != undefined || o.seconds != undefined">
+                    用时:
+                    <span v-if="o.minutues != undefined">
+                      {{ o.minutes }}分
+                    </span>
+                    <span v-if="o.seconds != undefined">{{ o.seconds }}秒</span>
+                  </p>
+                  <p>主要步骤：{{ o.MainSteps }}</p>
+                  <p>重点：{{ o.focus }}</p>
+                </el-card>
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <p>暂无作业指导书信息</p>
+          </div>
+        </div>
+      </div>
+      <div class="class-wrok-lable-right-container">
+        <!-- 工序列表 -->
+        <div class="work-lable-seq-list-container">
+          <h4>工序列表</h4>
+          <div v-if="currSeqDetail != null">
+            <ul style="text-align: start">
+              <li v-for="(seqDetail, idx) in currSeqDetail" :key="idx">
+                {{ seqDetail.seqCode }}:{{ seqDetail.workName }}
+              </li>
+            </ul>
+          </div>
+          <div v-else>
+            <p>暂无工序信息</p>
+          </div>
+        </div>
+        <!-- 加工详情 -->
+        <hr />
+        <div>
+          <h4>加工详情</h4>
+          <!-- {{ processInfo }} -->
+          <div v-if="processInfo != null">
+            <el-row>
+              <el-col :span="4">加工编号</el-col>
+              <el-col :span="20">{{ processInfo.workId }}</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="4">开始时间</el-col>
+              <el-col :span="20">{{ processInfo.startTime }}</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="4">流程编号</el-col>
+              <el-col :span="8">{{ processInfo.flowCode }}</el-col>
+              <el-col :span="4">完成状态</el-col>
+              <el-col :span="8">{{ processInfo.status }}</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="4">终止时间</el-col>
+              <el-col :span="20">{{ processInfo.endTime }}</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="4">完成时间</el-col>
+              <el-col :span="20">{{ processInfo.finishTime }}</el-col>
+            </el-row>
+          </div>
+          <div v-else>
+            <p>暂无加工信息</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
-  <h1>生成过程界面</h1>
-  <ul>
-    <li>生成零件的编号 cargocode + 他的一维码形式显示</li>
-    <li>零件名称</li>
-    <li>零件工序</li>
-    <li>零件毛胚出库时间</li>
-    <li>零件流转状态编码</li>
-    <li>零件工序执行情况</li>
-    <li>零件检查数据</li>
-    <li>零件上衣工序执行人信息等</li>
-    <li>本次执行了多久</li>
-  </ul>
-  {{ partInfo }}
+  <!-- {{ partInfo }}
   <hr />
-  {{ processInfo }}
+  {{ processInfo }} -->
   <hr />
-  {{ currSeqDetail }}
 </template>
 
 <script lang="ts">
@@ -174,6 +258,9 @@ export default defineComponent({
     let workBook = ref(new Workbook());
     let p = new WorkbookProcess();
     let process = ref([p]);
+    let finshFlag = false;
+
+    let seqFinishFlag = ref(false);
 
     //工序列表
     let seqList: any[] = [];
@@ -184,19 +271,116 @@ export default defineComponent({
 
     // 计时器
     let totalSec = 0;
+    let timer: any = "";
 
     //网络请求
     const enterWork = () => {
+      if (processInfo.value != null && processInfo.value.status == 3) {
+        ElNotification({
+          title: "加工已完成",
+          type: "error",
+          message: "该零件已经完成加工！",
+        });
+        open("/#/detect");
+        return;
+      }
+      seqFinishFlag.value = false;
       console.log("输入零件编号");
       //第二次扫码
       if (staticPartCode.value == currPartCode.value) {
         sureStatus.value = true;
-        let msg = `本工序加工时长总计为【${limitTimeSec}】秒,请注意安全生产完成加工。`;
-        ElNotification({
-          title: "零件加工开始",
-          type: "success",
-          message: msg,
-        });
+        //判断是否有加工信息 以此判断是否进行初始化加工
+        if (processInfo.value == null) {
+          //初始化加工
+          axios
+            .get(`/pms/make/init?code=${staticPartCode.value}`)
+            .then((resp) => {
+              console.log(resp);
+              //请求获取加工信息
+              axios
+                .get(`/pms/make/workInfo?code=${staticPartCode.value}`)
+                .then((resp) => {
+                  console.log(resp);
+                  let data = resp.data.data;
+                  if (data == null) {
+                    ElNotification({
+                      title: "当前零件无加工记录",
+                      type: "info",
+                      message:
+                        "当前零件无加工记录，再次扫码将进行零件加工初始化",
+                    });
+                    //当不存在加工信息时 就显示第一工序详情
+
+                    getWorkBookByNo(currSeqDetail.value[0].workNo);
+                  } else {
+                    processInfo.value = data;
+                    let fc = processInfo.value.flowCode;
+                    console.log(parseInt(fc, 16).toString(2));
+                  }
+                });
+            });
+        }
+        //定时器
+        if (sureStatus.value == true && finshFlag == false) {
+          timer = setInterval(() => {
+            //   var d = new Date();
+            //   var t = d.toLocaleTimeString();
+            //   console.log(t);
+            console.log("开始了");
+            workSec.value++;
+            if (workSec.value == 60) {
+              workSec.value = 0;
+              workMinu.value++;
+            }
+            totalSec++;
+            if (totalSec > limitTimeSec / 2) {
+              // console.log("PART OUT", totalSec);
+              timerColor.value = "#ebb563";
+            }
+            if (totalSec > limitTimeSec) {
+              // console.log("OUT", totalSec);
+              timerColor.value = "#f56c6c";
+            }
+          }, 1000);
+        }
+        //是否是第三次扫码 【结束！】
+        if (finshFlag == true) {
+          axios
+            .get(`/pms/make/end-step?code=${staticPartCode.value}`)
+            .then((resp) => {
+              console.log(resp);
+              let data = resp.data.data;
+              processInfo.value = data;
+              let fc = processInfo.value.flowCode;
+              console.log(parseInt(fc, 16).toString(2));
+              console.log("时间停止", timer);
+
+              clearInterval(timer);
+              let msgEnd = `本工序加工时长总计为【${totalSec}】秒`;
+              ElNotification({
+                title: "零件完成",
+                type: "success",
+                message: msgEnd,
+              });
+
+              //工序完成 恢复默认值
+              workMinu.value = 0;
+              workSec.value = 0;
+              totalSec = 0;
+              seqFinishFlag.value = true;
+              staticPartCode.value = "";
+              processInfo.value = null;
+              finshFlag = false;
+            });
+        } else {
+          let msg = `本工序加工时长总计为【${limitTimeSec}】秒,请注意安全生产完成加工。`;
+          ElNotification({
+            title: "零件加工开始",
+            type: "success",
+            message: msg,
+          });
+          finshFlag = true;
+        }
       } else {
         //第一次扫码
         partInfo.value = null;
@@ -245,11 +429,19 @@ export default defineComponent({
                       });
                       //当不存在加工信息时 就显示第一工序详情
 
-                      getWorkBookByNo(seqList[0].workNo);
+                      getWorkBookByNo(currSeqDetail.value[0].workNo);
                     } else {
+                      //有加工信息
                       processInfo.value = data;
                       let fc = processInfo.value.flowCode;
                       console.log(parseInt(fc, 16).toString(2));
+                      let binCode = parseInt(fc, 16).toString(2);
+                      let subBinCode = binCode.substring(4);
+                      let i = subBinCode.lastIndexOf("1");
+                      console.log("idx", i, binCode);
+                      if (currSeqDetail.value[i + 1] != null) {
+                        getWorkBookByNo(currSeqDetail.value[i + 1].workNo);
+                      }
                     }
                   });
               });
@@ -263,28 +455,8 @@ export default defineComponent({
           }
         });
       }
+      console.log(sureStatus, finshFlag);
 
-      if (sureStatus.value == true) {
-        setInterval(() => {
-          //   var d = new Date();
-          //   var t = d.toLocaleTimeString();
-          //   console.log(t);
-          workSec.value++;
-          if (workSec.value == 60) {
-            workSec.value = 0;
-            workMinu.value++;
-          }
-          totalSec++;
-          if (totalSec > limitTimeSec / 2) {
-            // console.log("PART OUT", totalSec);
-            timerColor.value = "#ebb563";
-          }
-          if (totalSec > limitTimeSec) {
-            // console.log("OUT", totalSec);
-            timerColor.value = "#f56c6c";
-          }
-        }, 1000);
-      }
       currPartCode.value = "";
     };
 
@@ -301,6 +473,24 @@ export default defineComponent({
     };
     const getWorkBookByNo = (No: string) => {
       console.log("getWorkBookByNo", No);
+      axios.get(`/pms/make/work-book?workNo=${No}`).then((resp) => {
+        console.log(`获取工序${No}`, resp);
+        workBook.value = resp.data.data;
+        workBook.value.process = resp.data.data.process;
+        process.value = resp.data.data.process;
+        console.log(process.value);
+        let pv = process.value;
+        let totalM = 0;
+        let totalS = 0;
+        pv.forEach((e) => {
+          if (e.minutes != null) totalM += e.minutes * 1;
+        });
+        pv.forEach((e) => {
+          if (e.seconds != null) totalS += e.seconds * 1;
+        });
+        limitTimeSec = totalM * 60 + totalS;
+        console.log("计算出总用时", limitTimeSec);
+      });
     };
 
     onBeforeMount(() => {
@@ -323,6 +513,9 @@ export default defineComponent({
       workId,
       processInfo,
       currSeqDetail,
+      process,
+      workBook,
+      seqFinishFlag,
     };
   },
 });

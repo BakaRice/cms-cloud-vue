@@ -247,7 +247,7 @@ export default {
     //提前定义数据内容 列表格式
     //定义种类列表
     const typeTableLabel = [
-      { label: "id", width: "40", prop: "id" },
+      { label: "idx", width: "40", prop: "id" },
       { label: "零件名称", width: "", prop: "name" },
       { label: "供应商名称", width: "", prop: "supplierName" },
       { label: "供应商编号", width: "", prop: "supplierId" },
@@ -447,10 +447,35 @@ export default {
       myCharts.value.chart1.on(
         "click",
         function (params: { name: string | number | boolean }) {
-          console.log("click", params);
+          // console.log("click", params);
+          check(params);
         }
       );
     }, 10);
+
+    let check = async (params: any) => {
+      console.log("check", params.data.name);
+      let currCheck = params.data.name;
+      if (currCheck == "零件") {
+        let resp = await axios.get(
+          `/pms/warehouse/parts?pageNum=1&pageSize=10`
+        );
+        let data = resp.data.data.list;
+
+        tableData.value = data;
+        console.log("备件", data);
+      } else if (currCheck == "备件") {
+        let resp = await axios.get(
+          `/pms/warehouse/space-parts?pageNum=1&pageSize=10`
+        );
+        let data = resp.data.data.list;
+
+        tableData.value = data;
+        console.log("备件", data);
+      }
+
+      // await axios.get()
+    };
 
     const onFind = () => {
       console.log("userinfo查询接口", findContent.value);
@@ -529,8 +554,9 @@ export default {
       (resp) => {
         console.log(resp);
         mychartData = resp.data.data;
-        console.log(mychartData);
+        console.log("mychartData", mychartData);
         myCharts.value.chart1.hideLoading();
+
         myCharts.value.chart1.setOption({
           series: {
             type: "sunburst",

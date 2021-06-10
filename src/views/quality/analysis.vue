@@ -456,10 +456,24 @@ export default defineComponent({
         },
       ],
     };
+    const getRandomArbitrary = (min: number, max: number): number => {
+      return Math.random() * (max - min) + min;
+    };
+
+    console.log(getRandomArbitrary(100, 140));
+    let fakeData: any[] = [];
+    for (let p = 0; p < 100; p++) {
+      fakeData.push([
+        getRandomArbitrary(140, 180),
+        getRandomArbitrary(40, 100),
+      ]);
+    }
+    console.log(fakeData);
 
     setTimeout(() => {
       // 绘制图表 chart1
       myCharts.value.chart1 = echarts.init(myChart.value!, { renderer: "svg" });
+      mychartOption.series[1].data = fakeData;
       myCharts.value.chart1.setOption(mychartOption);
       myCharts.value.chart1.on("click", function (params: { name: any }) {
         console.log(params);

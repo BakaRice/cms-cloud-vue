@@ -117,6 +117,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/warehouse/supplier/outbound.vue"),
       },
       {
+        name: "boundDetail",
+        path: "/boundDetail/:inboundId",
+        props: true,
+        component: () => import("@/views/warehouse/boundDetail.vue"),
+      },
+      {
         //备件存储管理
         name: "space-part",
         path: "/space-part",
@@ -206,6 +212,12 @@ const routes: Array<RouteRecordRaw> = [
         path: "/work-label/:cargoCode",
         props: true,
         component: () => import("@/views/make/user/work-label.vue"),
+      },
+      {
+        name: "workflow-init",
+        path: "/workflow-init/:paname",
+        props: true,
+        component: () => import("@/views/make/workflow-init.vue"),
       },
     ],
   },
@@ -445,155 +457,11 @@ const adminMenuList: Menu[] = [
         title: "零件存储管理",
         path: "/part",
       },
-      {
-        index: "3-2",
-        title: "备件存储管理",
-        path: "/space-part",
-      },
-      {
-        index: "3-3",
-        title: "库存计划管理",
-        path: "/plan",
-      },
-      {
-        index: "3-4",
-        title: "出入库计划管理",
-        path: "/stream",
-      },
-    ],
-  },
-  {
-    index: "4",
-    i: "el-icon-cpu",
-    title: "设备管理模块",
-    children: [
-      {
-        index: "4-1",
-        title: "加工设备管理",
-        path: "/processDevice",
-      },
-      {
-        index: "4-2",
-        title: "检测仪器管理",
-        path: "/testDevice",
-      },
-      {
-        index: "4-3",
-        title: "设备使用计划管理",
-        path: "/planDevice",
-      },
-    ],
-  },
-  {
-    index: "5",
-    i: "el-icon-notebook-2",
-    title: "质量管理模块",
-    children: [
-      {
-        index: "5-1",
-        title: "质量级别",
-        path: "/level",
-      },
-      {
-        index: "5-2",
-        title: "质量检测",
-        path: "/detect",
-      },
-      {
-        index: "5-3",
-        title: "质量分析",
-        path: "/analysis",
-      },
-    ],
-  },
-  {
-    index: "6",
-    i: "el-icon-odometer",
-    title: "生产加工管理模块",
-    children: [
-      {
-        index: "6-1",
-        title: "生产作业流程管理",
-        path: "/workflow",
-      },
-      {
-        index: "6-2",
-        title: "加工数据管理",
-        path: "/data",
-      },
-      {
-        index: "6-3",
-        title: "加工数据分析",
-        path: "/makeAnalysis",
-      },
-    ],
-  },
-];
-const leaderMenuList: Menu[] = [
-  {
-    index: "1",
-    i: "el-icon-location",
-    title: "测试开发模块",
-    children: [
-      {
-        index: "1-1",
-        title: "零件管理 three",
-        path: "/three",
-      },
-      {
-        index: "1-2",
-        title: "连接 link",
-        path: "/link",
-      },
-      {
-        index: "1-3",
-        title: "连接 P1",
-        path: "/P1",
-      },
-    ],
-  },
-  {
-    index: "2",
-    i: "el-icon-user-solid",
-    title: "员工管理模块",
-    children: [
-      {
-        index: "2-1",
-        title: "员工信息",
-        path: "/userInfo",
-      },
-      {
-        index: "2-2",
-        title: "排班信息",
-        path: "/roster",
-      },
-      {
-        index: "2-3",
-        title: "考勤信息",
-        path: "/attendance",
-      },
-      {
-        index: "2-4",
-        title: "考勤打卡",
-        path: "/clockIn",
-      },
-    ],
-  },
-  {
-    index: "3",
-    i: "el-icon-house",
-    title: "仓储管理模块",
-    children: [
-      {
-        index: "3-1",
-        title: "零件存储管理",
-        path: "/part",
-      },
-      {
-        index: "3-2",
-        title: "备件存储管理",
-        path: "/space-part",
-      },
+      // {
+      //   index: "3-2",
+      //   title: "备件存储管理",
+      //   path: "/space-part",
+      // },
       {
         index: "3-3",
         title: "库存计划管理",
@@ -674,6 +542,166 @@ const leaderMenuList: Menu[] = [
         index: "6-4",
         title: "生产流程管理",
         path: "/makeflow",
+      },
+      {
+        index: "6-5",
+        title: "加工面板",
+        path: "/work-label/init",
+      },
+    ],
+  },
+];
+const leaderMenuList: Menu[] = [
+  {
+    index: "1",
+    i: "el-icon-location",
+    title: "测试开发模块",
+    children: [
+      {
+        index: "1-1",
+        title: "零件管理 three",
+        path: "/three",
+      },
+      {
+        index: "1-2",
+        title: "连接 link",
+        path: "/link",
+      },
+      {
+        index: "1-3",
+        title: "连接 P1",
+        path: "/P1",
+      },
+    ],
+  },
+  {
+    index: "2",
+    i: "el-icon-user-solid",
+    title: "员工管理模块",
+    children: [
+      {
+        index: "2-1",
+        title: "员工信息",
+        path: "/userInfo",
+      },
+      {
+        index: "2-2",
+        title: "排班信息",
+        path: "/roster",
+      },
+      {
+        index: "2-3",
+        title: "考勤信息",
+        path: "/attendance",
+      },
+      {
+        index: "2-4",
+        title: "考勤打卡",
+        path: "/clockIn",
+      },
+    ],
+  },
+  {
+    index: "3",
+    i: "el-icon-house",
+    title: "仓储管理模块",
+    children: [
+      {
+        index: "3-1",
+        title: "仓库存储管理",
+        path: "/part",
+      },
+      // {
+      //   index: "3-2",
+      //   title: "备件存储管理",
+      //   path: "/space-part",
+      // },
+      {
+        index: "3-3",
+        title: "库存计划管理",
+        path: "/plan",
+      },
+      {
+        index: "3-4",
+        title: "出入库计划管理",
+        path: "/stream",
+      },
+    ],
+  },
+  {
+    index: "4",
+    i: "el-icon-cpu",
+    title: "设备管理模块",
+    children: [
+      {
+        index: "4-1",
+        title: "加工设备管理",
+        path: "/processDevice",
+      },
+      {
+        index: "4-2",
+        title: "检测仪器管理",
+        path: "/testDevice",
+      },
+      {
+        index: "4-3",
+        title: "设备使用计划管理",
+        path: "/planDevice",
+      },
+    ],
+  },
+  {
+    index: "5",
+    i: "el-icon-notebook-2",
+    title: "质量管理模块",
+    children: [
+      {
+        index: "5-1",
+        title: "质量级别",
+        path: "/level",
+      },
+      {
+        index: "5-2",
+        title: "质量检测",
+        path: "/detect",
+      },
+      {
+        index: "5-3",
+        title: "质量分析",
+        path: "/analysis",
+      },
+    ],
+  },
+  {
+    index: "6",
+    i: "el-icon-odometer",
+    title: "生产加工管理模块",
+    children: [
+      {
+        index: "6-1",
+        title: "生产作业流程管理",
+        path: "/workflow",
+      },
+      {
+        index: "6-2",
+        title: "加工数据管理",
+        path: "/data",
+      },
+      {
+        index: "6-3",
+        title: "加工数据分析",
+        path: "/makeAnalysis",
+      },
+      {
+        index: "6-4",
+        title: "生产流程管理",
+        path: "/makeflow",
+      },
+
+      {
+        index: "6-5",
+        title: "加工面板",
+        path: "/work-label/init",
       },
     ],
   },

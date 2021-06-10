@@ -52,6 +52,7 @@
           ></el-option>
         </el-select>
       </div>
+      <el-button type="success" @click="pushThree()">查看三维模型</el-button>
 
       <!-- 上传文件按钮 -->
       <div
@@ -122,6 +123,8 @@
 import { readWorkFlowFile } from "@/util/ExcelUtils.js";
 import { ref } from "vue";
 import axios from "@/axios/index";
+import router from "@/router";
+import { ElNotification } from "element-plus";
 class Workbook {
   workNo;
   workName;
@@ -144,11 +147,23 @@ class WorkbookProcess {
 }
 
 export default {
+  methods: {
+    open1() {
+      this.$notify({
+        title: "成功",
+        message: "这是一条成功的提示消息",
+        type: "success",
+      });
+    },
+  },
   setup() {
     let workBook = ref(new Workbook());
     let p = new WorkbookProcess();
     let process = ref([p]);
     let currSeqDetail = ref();
+    const pushThree = () => {
+      router.push("/three");
+    };
     const readFile = (e) => {
       //(e: Event) => {
       const target = e.target; //as HTMLInputElement;
@@ -161,6 +176,11 @@ export default {
           (resp) => {
             console.log(resp);
             console.log("work-book", resp);
+            ElNotification({
+              title: "工序上传成功",
+              type: "success",
+              message: "当前工序作业流程成功生产",
+            });
           },
           (error) => {
             console.log(error);
@@ -233,7 +253,8 @@ export default {
       getSeq(name);
     };
     const seqInit = (name) => {
-      console.log(name);
+      console.log(name, `/workflow-init/${name}`);
+      router.push(`/workflow-init/${name}`);
     };
     const getSeq = (name) => {
       axios.get(`/pms/make/stepDto?name=${name}`).then((resp) => {
@@ -286,6 +307,7 @@ export default {
       activeIndex,
       currLevel,
       leveloptions,
+      pushThree,
     };
   },
 };

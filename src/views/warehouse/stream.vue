@@ -52,7 +52,7 @@
             <!-- <el-button type="info" @click="getUserdetail(itemOp)">详情</el-button> -->
             <template #default="scope">
               <el-button
-                @click.enter.prevent="getDetailRow(scope.$index, tableData)"
+                @click.enter.prevent="getDetailRow(scope.row, tableData)"
                 type="text"
                 size="small"
               >
@@ -98,6 +98,7 @@ import { ref } from "vue";
 import { UPDATE_EXCEPTION } from "@/store/VuexTypes";
 import store from "@/store";
 import router from "@/router";
+import axios from "@/axios";
 
 export default {
   setup() {
@@ -107,9 +108,8 @@ export default {
       { label: "id", width: "40", prop: "id" },
       { label: "类型", width: "", prop: "type" },
       { label: "操作人", width: "", prop: "userName" },
-      { label: "操作时间", width: "", prop: "time" },
+      { label: "操作时间", width: "200", prop: "createTime" },
       { label: "所属库", width: "200", prop: "warehouseName" },
-      { label: "相关供应商", width: "200", prop: "supplierName" },
     ];
     //提前定义操作内容 列表格式
     const tableOperationLabel = [{ label: "操作", width: "", prop: "detail" }];
@@ -119,55 +119,7 @@ export default {
         id: "1",
         type: "出库",
         userName: "张武醒",
-        time: "2021-05-12T07:26:33 -08:00",
-        warehouseName: "中央仓库01",
-        supplierName: "丹江铸力",
-      },
-      {
-        id: "2",
-        type: "出库",
-        userName: "谭文韬",
-        time: "2021-05-12T07:26:33 -08:00",
-        warehouseName: "中央仓库01",
-        supplierName: "丹江铸力",
-      },
-      {
-        id: "3",
-        type: "出库",
-        userName: "谭文韬",
-        time: "2021-05-11T07:26:33 -08:00",
-        warehouseName: "中央仓库01",
-        supplierName: "丹江铸力",
-      },
-      {
-        id: "4",
-        type: "入库",
-        userName: "谭文韬",
-        time: "2021-05-10T08:51:17 -08:00",
-        warehouseName: "中央仓库01",
-        supplierName: "丹江铸力",
-      },
-      {
-        id: "5",
-        type: "出库",
-        userName: "谭文韬",
-        time: "2019-09-12T07:26:33 -08:00",
-        warehouseName: "中央仓库01",
-        supplierName: "丹江铸力",
-      },
-      {
-        id: "6",
-        type: "出库",
-        userName: "谭文韬",
-        time: "2020-09-10T08:51:17 -08:00",
-        warehouseName: "中央仓库01",
-        supplierName: "丹江铸力",
-      },
-      {
-        id: "7",
-        type: "出库",
-        userName: "谭文韬",
-        time: "2017-02-25T04:34:52 -08:00",
+        createTime: "2021-05-12T07:26:33 -08:00",
         warehouseName: "中央仓库01",
         supplierName: "丹江铸力",
       },
@@ -195,24 +147,38 @@ export default {
         console.log("PART 查询功能未实现！");
       }
     };
+    axios
+      .get(
+        `/pms/warehouse/inbound?pageNum=${req.pageNum}&pageSize=${req.pageSize}`
+      )
+      .then((resp) => {
+        console.log(resp);
+        total.value = resp.data.data.total;
+        currPage.value = resp.data.data.pageNum;
+        totalPage.value = resp.data.data.pages;
+        tableData.value = resp.data.data.list;
+        console.log(tableData.value);
+
+        //修正时间格式
+        tableData.value.forEach((e) => {
+          e.createTime = e.createTime.substring(0, 19).replace("T", " ");
+        });
+      });
 
     const onReset = () => {
       findContent.value.get = "";
       console.log("PART 查询功能重置！");
-      // axios
-      //   .get(
-      //     "/pms/leader/infos?pageNum=" +
-      //       req.pageNum +
-      //       "&pageSize=" +
-      //       req.pageSize
-      //   )
-      //   .then((resp) => {
-      //     total.value = resp.data.data.total;
-      //     currPage.value = resp.data.data.pageNum;
-      //     totalPage.value = resp.data.data.pages;
-      //     tableData.value = resp.data.data.list;
-      //     console.log(tableData.value);
-      //   });
+      axios
+        .get(
+          `/pms/warehouse/inbound?pageNum=${req.pageNum}&pageSize=${req.pageSize}`
+        )
+        .then((resp) => {
+          total.value = resp.data.data.total;
+          currPage.value = resp.data.data.pageNum;
+          totalPage.value = resp.data.data.pages;
+          tableData.value = resp.data.data.list;
+          console.log(tableData.value);
+        });
     };
 
     //获取页面内容
@@ -225,29 +191,26 @@ export default {
       currPage.value = cp;
       console.log("获取分页内容未实现!");
 
-      // //进行内容查询
-      // axios
-      //   .get(
-      //     "/pms/leader/infos?pageNum=" +
-      //       req.pageNum +
-      //       "&pageSize=" +
-      //       req.pageSize
-      //   )
-      //   .then((resp) => {
-      //     total.value = resp.data.data.total;
-      //     currPage.value = resp.data.data.pageNum;
-      //     totalPage.value = resp.data.data.pages;
-      //     tableData.value = resp.data.data.list;
-      //   });
+      //进行内容查询
+      axios
+        .get(
+          `/pms/warehouse/inbound?pageNum=${req.pageNum}&pageSize=${req.pageSize}`
+        )
+        .then((resp) => {
+          total.value = resp.data.data.total;
+          currPage.value = resp.data.data.pageNum;
+          totalPage.value = resp.data.data.pages;
+          tableData.value = resp.data.data.list;
+        });
     };
 
-    const getDetailRow = (index: number, rows: Array<any>) => {
+    const getDetailRow = (row: any, rows: Array<any>) => {
       // rows.splice(index, 1);
-      console.log(index, rows);
-      // const uid = rows[index].idString;
-      // router.push({
-      //   path: "/userInfo/" + uid,
-      // });
+      console.log(row, rows);
+      const bid = row.id;
+      router.push({
+        path: "/boundDetail/" + bid,
+      });
     };
 
     const editDetailRow = (index: number, rows: Array<any>) => {
